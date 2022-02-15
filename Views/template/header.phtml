@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Client Server Systems assignment website">
+    <meta name="author" content="Michal Brenda @00559233">
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="css/bootstrap-theme.css" rel="stylesheet">
+    <link href="css/my-style.css" rel="stylesheet">
+
+
+    <title>Server-Side Programming - <?php echo $view->pageTitle; ?></title>
+</head>
+
+<body role="document">
+
+<!-- Main content starts here -->
+<div class="container-fluid no-gutters p-0" id="content">
+
+    <nav class="navbar navbar-light bg-light">
+        <a href="index.php"><img class="navbar-left" src="images/logo.transparent.gif" id="Logo" height="50vn" alt="logo" ></a>
+        <form class="form-inline" action="search.php" method="post">
+            <label for="findFriend">Find friends:&nbsp; </label>
+            <input class="form-control mr-sm-2" name="searchField" type="search" id="findFriends" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" name="search" type="submit">Search</button>
+        </form>
+        <ul class="nav navbar-nav navbar-right d-inline-block">
+            <li class="d-inline-block"><a href="selfAssesment.docx"><button class="btn btn-success my-2 my-sm-0 "
+                                                                           type="button" id="assesmentButton"  aria-label="Login">Self-assesment</button></a></li>
+            <?php
+            //Display log in button if not logged in
+            if(!isset($_SESSION["login"])) {
+                echo '    
+            
+                        <li class="d-inline-block"><button class="btn btn-success my-2 my-sm-0 " 
+                                    type="button" id="loginButton"  aria-label="Login">Login</button></li>
+                     <li class="d-inline-block"><a href="registration.php"><button class="btn btn-success my-2 my-sm-0 " type="button" id="registrationButton"  aria-label="Registration">Register</button></a></li>';
+                     }
+            else {
+            //Display logout button if not logged in
+                echo '
+                        <li class="d-inline-block"><form method="post" action=""><button class="btn btn-success my02 my-sm-0" 
+                                    type="submit" name="logout" id="logoutButton" aria-label="Logout"> Logout</button> </form></li> ';
+            }?>
+
+
+        </ul>
+    </nav>
+
+    <!-- The Modal -->
+    <div id="popUpLogin" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content col-xl-4 col-lg-5 col-md-8 col-sm-10 formBox mx-auto">
+
+            <div class="modal-body">
+                <h3> Sign-in <span class="close">&times;</span></h3>
+                <form class="p-3" method="post"  action="">
+                    <div class="form-group" >
+                        <label for="loginInput">Login</label>
+                        <input type="text"  name="loginInput" class="form-control" id="loginInput" placeholder="Login" aria-label="login">
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordInput">Password:</label>
+                        <input type="password" name="passwordInput" class="form-control" id="passwordInput" placeholder="Password" aria-label="password">
+                    </div>
+                    <button type="submit" class="btn btn-success" name="login" id="loginButton" aria-label="loginButton">Login</button>
+                    <hr />
+                    Don't have an account?
+                    <a href="registration.php" role="button" class="btn btn-link" >Register here</a>
+                    <a href="passwordreset.php" role="button" class="btn btn-link">Reset Password</a>
+                    <a href="messenger.php" role="button" class="btn btn-link">Messenger</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="scripts/loginWindow.js"></script>
+
+
+

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="poseidon.salford.ac.uk" id="6760384e-d09d-423d-b6e9-ebf5a1badbde" port="22" nameFormat="DESCRIPTIVE" username="aee420" />
+    </configs>
+  </component>
+</project>
