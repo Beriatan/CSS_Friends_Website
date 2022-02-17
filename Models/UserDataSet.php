@@ -11,51 +11,55 @@ class UserDataSet
     public function __construct() {
         $this->dbInstance = Database::getInstance();
         $this->dbHandle = $this->dbInstance->getDbConnection();
+        if(session_id() == '') session_start();
     }
 
+    //Used to save values in the session variable, so the query is loaded once, rather than each time when data is required.
+    function executeQuery(string $sqlQuery, array $values = null): bool|PDOStatement
+    {
+        //preparing the PDO statement
+        $statement = $this->dbHandle->prepare($sqlQuery);
+        //executing query
+        $statement->execute($values);
+        //saving the query and values in session variables
+        $_SESSION['lastQuery'] = $sqlQuery;
+        if($values != null)
+        {
+            $_SESSION['lastValues'] = $values;
+        }else {
+            $_SESSION['lastValues'] = [];
+        }
+        return $statement;
+    }
+
+    function fetchUsers($statement)
+    {
+        $dataSet = [];
+        while ($row = $statement->fetch()){
+            $dataSet[]  = new UserData($row,$this->getFriendshipList($row['id']));
+        }
+        return $dataSet;
+    }
 
     //Returns all users as an array
     public function fetchAllUsers() {
         $sqlQuery = 'SELECT * FROM user_data';
-        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
-        $statement->execute(); //Executes the PDO statement
-
-        $dataSet = [];
-        while ($row = $statement->fetch()){
-            $dataSet[]  = new UserData($row,$this->getFriendshipList($row['id']));
-        }
-        return $dataSet;
+        return $this->fetchUsers($this->executeQuery($sqlQuery));
     }
     //Gets the user by ID
-    public function fetchUserById($userId) {
+    public function fetchUserByAttributeAndValue($attribute, $value) {
 
-        $sqlQuery = "SELECT * FROM user_data WHERE id = :id";
-        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
-
-        $statement->bindParam(':id',$userId);//Assign the parameter(userID) to requested query
-        $statement->execute(); //Executes the PDO statement
-
-        $dataSet = [];
-        while ($row = $statement->fetch()){
-            $dataSet[]  = new UserData($row,$this->getFriendshipList($row['id']));
-        }
-        return $dataSet;
+        $sqlQuery = "SELECT * FROM user_data WHERE ".$attribute." = ?";
+        return $this->fetchUsers($this->executeQuery($sqlQuery));
     }
 
     //Checks whether a person with the username and password already exists - if so, returns the user
     public function authenticateCredentials($username, $password) {
         $sqlQuery = 'SELECT * 
                      FROM user_data
-                     WHERE username = :uname AND password_encrypted= :pwd';  //Prepare the query
-        $statement = $this->dbHandle->prepare($sqlQuery); //Get the query in and wait for rest of parameters
-        $statement->bindParam(':uname',$username); //First parameter
-        $statement->bindParam(':pwd',$password); //Second parameter
-        $statement->execute(); //Execute the statement
-        $dataSet = [];
-        while ($row = $statement->fetch()){
-            $dataSet[]  = new UserData($row,$this->getFriendshipList($row['id']));
-        }
-        return $dataSet;
+                     WHERE username = ? AND password_encrypted= ?';  //Prepare the query
+
+        return $this->fetchUsers($this->executeQuery($sqlQuery, [$username, $password]));
     }
     //Adds the new user to the database - if user exists, returns to the registration page with warning
     public function registerUser($username, $first_name, $last_name, $email, $phone_number, $password)

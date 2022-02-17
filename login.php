@@ -5,8 +5,8 @@ session_start();
 
 
 if (isset($_POST["login"])) {
-    $username = filter_var($_POST["loginInput"], FILTER_SANITIZE_STRING);
-    $password = filter_var($_POST["passwordInput"], FILTER_SANITIZE_STRING);
+    $username = filter_var($_POST["loginInput"]);
+    $password = filter_var($_POST["passwordInput"]);
     $userDataSet = new UserDataSet();
     $isLoggedIn = $userDataSet->authenticateCredentials($username, $password);
 

@@ -6,9 +6,9 @@ require_once('Models/UserDataSet.php');
 
 if (isset($_POST["changeFriend"])) {
 
-    $userID = filter_var($_POST["userID"], FILTER_SANITIZE_STRING);
-    $friendID = filter_var($_POST["friendID"], FILTER_SANITIZE_STRING);
-    $status = filter_var($_POST["changeFriend"], FILTER_SANITIZE_STRING);
+    $userID = filter_var($_POST["userID"]);
+    $friendID = filter_var($_POST["friendID"]);
+    $status = filter_var($_POST["changeFriend"]);
 
     //Controller for the method Update Friendship in User Data Set - changes friendship status or adds a new one
     $dataset = new UserDataSet();
