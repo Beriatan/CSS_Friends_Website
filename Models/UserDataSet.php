@@ -89,31 +89,38 @@ class UserDataSet
         }
     }
     //Find users based on search query
-    public function fetchUsersBySearchedTerm($term)
+    public function search($searchTerm)
     {
-        $searchedTerm = '%'.$term.'%';
+        $splitSearch = explode(",", $searchTerm);
+
+        $searchedTerm = '%'.$searchTerm.'%';
         $sqlQuery = "SELECT * FROM user_data
                      WHERE first_name 
                      LIKE :query1 OR last_name LIKE :query1 OR email LIKE :query1 OR username LIKE :query1";
         $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
         $statement->bindParam(':query1',$searchedTerm);
         $statement->execute(); //Executes the PDO statement
-
-        $dataSet = [];
-        while ($row = $statement->fetch()){
-            $dataSet[]  = new UserData($row,$this->getFriendshipList($row['id']));
-        }
-        return $dataSet;
+        $this->fetchUsers($statement);
     }
     //Changes relationship status between users.
-    public function updateFriendship($userID, $friendID, $value){
-        //Values - 1- pending, 2-accept/deny - 3 -friends
-        $sqlQuery = "REPLACE INTO friendship_status(friend1,friend2,relationship) VALUES (:friend1,:friend2,:relationship)";
-        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
-        $statement->bindParam(':friend1',$userID);
-        $statement->bindParam(':friend2',$friendID);
-        $statement->bindParam(':relationship',$value);
-        $statement->execute(); //Executes the PDO statement
+
+
+    public function updateFriendship($userID, $friendID, $relationship){
+
+        $friendshipID = $this->getFriendshipID($userID, $friendID);
+        //first check if the relationship exists at all.
+        if($friendshipID)
+        {
+            //If it does, update the friendship status to a new value
+            $sqlQuery = "UPDATE friendship_status SET relationship = ? WHERE relationshipID = ".$friendshipID.";";
+            $this->executeQuery($sqlQuery,[$relationship]);
+        }
+        else {
+            //Or add new friendship
+            $sqlQuery = "INSERT INTO friendship_status(friend1, friend2, relationship) VALUES (?,?,?) ";
+            $this->executeQuery($sqlQuery,[$userID, $friendID, $relationship]);
+
+        }
     }
     //Returns a list of friends
     public function getFriendshipList($userID){
@@ -129,6 +136,22 @@ class UserDataSet
             $dataSet[] = new Friendship($row);
         }
         return $dataSet;
+
+    }
+    public function getFriendshipID($friend1, $friend2)
+    {
+            $sqlQUery = "SELECT * FROM friendship_status WHERE friend1 = ? AND friend2 = ?";
+            $statement = $this->executeQuery($sqlQUery, [$friend1, $friend2]);
+             $dataSet = [];
+             while ($row = $statement->fetch()){
+                $dataSet[] = new Friendship($row);
+             }
+             if($dataSet!=null){
+                return  $dataSet[0]->getId();
+             }else{
+                 return 0;
+            }
+
 
     }
 

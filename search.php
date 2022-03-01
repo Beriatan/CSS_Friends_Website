@@ -1,7 +1,7 @@
 <?php
 //Passes the searched term to the list generator
 if (isset($_POST["search"])) {
-$cookieValue = filter_var($_POST["searchField"], FILTER_SANITIZE_STRING);
+$cookieValue = filter_var($_POST["searchField"]);
 $cookieName = "searchedTerm";
 setcookie($cookieName, $cookieValue);
 

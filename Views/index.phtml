@@ -1,28 +1,17 @@
-<?php require('template/header.phtml');
-require_once('friendListElement.php');
-require_once('Models/UserDataSet.php');
-require_once ('Models/UserData.php');
-require_once ('listSearch.php');?>
+<?php require('Views/template/header.phtml');
+require_once ('Views/navbar.phtml');
+
+if(isset($_POST["registrationButton"])){
+    require_once('registration.php');
+
+}
+require('Views/template/footer.phtml');
 
 
 
+?>
+
+<!--You can display your friends here by default if logged in-->
 
 
-
-<ul class="list-group m-3 mr-5">
-    <?php
-        displaySearch();
-
-//Display friends button
-    if (isset($_SESSION["login"])) {
-        echo '       <li class="d-inline-block"><form method="post" action="listFriends.php"><button class="btn btn-success my02 my-sm-0" 
-                                    type="submit" name="listFriends" id="friendsButton"> Friends</button> </form></li>';
-                         } ?>
-
-</ul>
-
-
-
-
-<?php require('template/footer.phtml') ?>
 

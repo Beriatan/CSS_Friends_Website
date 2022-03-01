@@ -1,10 +1,36 @@
-<?php require('template/header.phtml') ?>
 
 
+<!-- The Login  Modal -->
+<div id="popUpLogin" class="modal">
 
+    <!-- Modal content -->
+    <div class="modal-content col-xl-4 col-lg-5 col-md-8 col-sm-10 formBox mx-auto">
+
+        <div class="modal-body">
+            <h3> Sign-in <span class="close">&times;</span></h3>
+            <form class="p-3" method="post"  action="">
+                <div class="form-group" >
+                    <label for="loginInput">Login</label>
+                    <input type="text"  name="loginInput" class="form-control" id="loginInput" placeholder="Login" aria-label="login">
+                </div>
+                <div class="form-group">
+                    <label for="passwordInput">Password:</label>
+                    <input type="password" name="passwordInput" class="form-control" id="passwordInput" placeholder="Password" aria-label="password">
+                </div>
+                <button type="submit" class="btn btn-success" name="login" id="loginButton" aria-label="loginButton">Login</button>
+                <hr />
+                Don't have an account?
+                <a href="registration.php" role="button" class="btn btn-link" >Register here</a>
+                <a href="passwordreset.php" role="button" class="btn btn-link">Reset Password</a>
+                <a href="messenger.php" role="button" class="btn btn-link">Messenger</a>
+            </form>
+        </div>
+    </div>
+</div>
+<!--
    <div class="col-xl-3 col-lg-4 col-md-2 col-sm-1 mx-auto"></div>
    <div class="col-xl-1 col-lg-5 col-md-8 col-sm-10 formBox mx-auto">
-       <!--login form start-->
+       login form start
        <h3> Login </h3>
        <form class="p-3">
            <div class="form-group">
@@ -22,8 +48,7 @@
            <a href="passwordreset.php" role="button" class="btn btn-link">Reset Password</a>
            <a href="messenger.php" role="button" class="btn btn-link">Messenger</a>
        </form>
-       <!--login form end-->
+       <!--login form end
    </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-1"></div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-1"></div>-->
 
-<?php require('template/footer.phtml') ?>

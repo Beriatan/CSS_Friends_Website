@@ -1,5 +1,5 @@
 <?php
-include_once('friendListElement.php');
+include_once('Views/friendListElement.phtml');
 //Display all searched elements -- will suppress some information if user is not logged-in
 
 function displaySearch(){
@@ -9,7 +9,7 @@ function displaySearch(){
 
         $userDataSet = new UserDataSet();
         $foundUsers = [];
-        $foundUsers = $userDataSet->fetchUsersBySearchedTerm($_COOKIE['searchedTerm']);
+        $foundUsers = $userDataSet->search($_COOKIE['searchedTerm']);
 
         if(isset($_SESSION["login"])) {
             $welcomeMessage = 'Hi, '.$_SESSION["login"].':)';

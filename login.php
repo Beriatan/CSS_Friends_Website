@@ -1,7 +1,6 @@
 <?php
 require_once('Models/UserDataSet.php');
 require_once('Models/UserData.php');
-session_start();
 
 
 if (isset($_POST["login"])) {
@@ -17,6 +16,7 @@ if (isset($_POST["login"])) {
     }
     else {
         echo "logged in successfuly";
+        session_start();
         $_SESSION["login"] = $username;
         $_SESSION["uid"] = $isLoggedIn[0]->getId();
     }
