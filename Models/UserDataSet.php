@@ -36,7 +36,7 @@ class UserDataSet
     {
         $dataSet = [];
         while ($row = $statement->fetch()){
-            $dataSet[]  = new UserData($row);
+            $dataSet[]  = new UserData($row,  $this->getFriendshipList($row['id']) );
         }
 //        var_dump($dataSet);
         return $dataSet;
@@ -140,7 +140,7 @@ class UserDataSet
     }
     //Returns a list of friends
     public function getFriendshipList($userID){
-        $sqlQuery = 'SELECT *
+        $sqlQuery = 'SELECT DISTINCT *
                      FROM user_data.friendship_status
                      WHERE friend1 = :id';
 

@@ -43,18 +43,18 @@ function listUserDetails(UserData $userData){
  function listPublicUserDetails($userData){
 
      $element = '
-
-    <li class="list-group-item p-3 ">
-        <div class="d-inline-block row">
-            <img src="'.$userData->getPhoto().'" class="img-fluid float-left p-3" style="width: 10rem;">
-            <div class="p-2 d-inline-block align-middle">'.$userData->getFirstName(). '</div>
-            <div class="p-2 d-inline-block">'.$userData->getLastName().'</div>
-            <div class="p-2 d-inline-block">'.$userData->getEmail().'</div>
-            <div class="p-2 d-inline-block">'.$userData->getUsername().'</div>
+    <div class="col">
+       <div class="card m-1 p-1 mt-2"  style="width: 20rem">
+            <img class="img-thumbnail" src="'.$userData->getPhoto().'"  class="card-img-top" alt="Friend\'s Photo">
+        <div class="card-body">
+            <h5 class="card-title">'.$userData->getFirstName().' '.$userData->getLastName().'</h5>
+            <h6 class="card-subtitle mb-2 text-muted">'.$userData->getUsername().'</h6>
+            <div class="p-2">'.$userData->getEmail().'</div>
+            </div>
+        <div class="card-footer" style="height: 4em">
         </div>
-
-
-    </li>';
+       </div>
+    </div>';
 
      echo $element;
 

@@ -36,19 +36,28 @@ if(isset($_POST['listFriends']))
         $friendID = $friendship->getFriend2();
         array_push($usersData, $userDataSet->fetchUserById($friendID));
     }
-    echo '<div class="card-group">';
+
     if($foundUsers != null){
         foreach($usersData as $user)
         {
             listUserDetails($user);
         }
     }
-    echo '</div>';
+
 }
 
 if(isset($_POST["registrationButton"])){
     require_once('registration.php');
 }
+echo '<div class="card-group">';
+$userDataSet = new UserDataSet();
+$allUsers = $userDataSet->fetchAllUsers();
+
+    foreach($allUsers as $user)
+    {
+        listPublicUserDetails($user);
+    }
+echo '</div>';
 
 require('Views/template/footer.phtml');
 
