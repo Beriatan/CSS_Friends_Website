@@ -1,57 +1,70 @@
-<?php require_once 'template/header.phtml'?>
-<nav class="navbar navbar-light bg-light">
-    <a href="index.php"><img class="navbar-left" src="images/logo.transparent.gif" id="Logo" height="50vn" alt="logo" ></a>
-    <form class="form-inline" action="search.php" method="post">
-        <label for="findFriend">Find friends:&nbsp; </label>
-        <input class="form-control mr-sm-2" name="searchField" type="search" id="findFriends" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" name="search" type="submit">Search</button>
-    </form>
-    <ul class="nav navbar-nav navbar-right d-inline-block">
-        <li class="d-inline-block"><a href="selfAssesment.docx"><button class="btn btn-success my-2 my-sm-0 "
-                                                                        type="button" id="assesmentButton"  aria-label="Login">Self-assesment</button></a></li>
-        <?php
-        //Display log in button if not logged in
-        if(!isset($_SESSION["login"])) {
-            echo '    
+<?php require_once 'template/header.phtml';
+require_once './login.php';?>
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.php"><img class="navbar-left" src="images/logo.transparent.gif" id="Logo" height="50vn" alt="logo" ></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="index.php">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active"  href="selfAssesment.docx">Self-assesment</a>
+                </li>
+                <?php if(isset($_SESSION["login"])){
+                    echo '
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Friends...
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">Invite/accept friends</a></li>
+                        <li><form method="post" class="mb-0" action=""><button class="btn btn-light  my02 my-sm-0 bg-transparent w-100" 
+                                    type="submit" name="listFriends" id="listFriendsButton" aria-label="List Friends"> List Friends</button> </form></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><form method="post" class="mb-0" action=""><button class="btn btn-light  my02 my-sm-0 bg-transparent w-100" 
+                                    type="submit" name="showMap" id="showMapButton" aria-label="Show Map Of Friends"><i class="bi bi-geo-alt"></i> Map of Friends</button> </form></li>
+                    </ul>
+                </li>';} ?>
+                <li class="nav-item px-5">
+                    <form class="d-flex">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="searchField" type="search" id="findFriends" placeholder="search..." aria-label="Search" aria-describedby="search">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" name="search" type="submit">Button</button>
+                            </div>
+                        </div>
+                    </form></li>
+                <li class="nav-item"></li>
+                <?php
+                //Display log in button if not logged in
+                if(!isset($_SESSION["login"])) {
+                    echo '    
             
-                        <li class="d-inline-block"><button class="btn btn-success my-2 my-sm-0 " 
-                                    type="button"  data-bs-toggle="modal" data-bs-target="#exampleModal"  aria-label="Login">Login</button></li>
-                     <li class="d-inline-block"><a href="registration.php"><button class="btn btn-success my-2 my-sm-0 " type="button" id="registrationButton"  aria-label="Registration">Register</button></a></li>';
-        }
-        else {
-            //Display logout button if logged in
-            echo '
-                        <li class="d-inline-block"><form method="post" action=""><button class="btn btn-success my02 my-sm-0" 
+                        <li class="nav-item float-right"><a class="nav-link active" href="#" data-bs-toggle="modal" data-bs-target="#popUpLogin">Login</a></li>
+                     <li class="nav-item float-right"><a href="registration.php" class="nav-link active">Register</a></li>';
+                }
+                else {
+                    //Display logout button if logged in
+                    echo '
+                        <li class="nav-item d-flex"><form method="post" action=""><button class="btn btn-light  my02 my-sm-0" 
                                     type="submit" name="logout" id="logoutButton" aria-label="Logout"> Logout</button> </form></li> ';
-        }?>
+                }?>
+
+            </ul>
 
 
-        <!-- Button trigger modal -->
-        <li><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            Launch demo modal
-        </button></li>
-
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        ...
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
-                </div>
-            </div>
         </div>
-
-
-    </ul>
+    </div>
 </nav>
 
 

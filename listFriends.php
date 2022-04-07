@@ -1,5 +1,5 @@
 <?php
-include_once('friendListElement.phtml');
+include_once('Views/friendListElement.phtml');
 include_once('Models/UserDataSet.php');
 include_once('Models/UserData.php');
 

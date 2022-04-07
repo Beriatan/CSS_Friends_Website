@@ -4,7 +4,7 @@ include_once('Views/friendListElement.phtml');
 
 function displaySearch(){
 
-    if(isset($_COOKIE['searchedTerm']))
+    if(isset($_POST['searchedTerm']))
     {
 
         $userDataSet = new UserDataSet();

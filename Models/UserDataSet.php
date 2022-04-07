@@ -32,12 +32,13 @@ class UserDataSet
         return $statement;
     }
 
-    function fetchUsers($statement)
+    public function fetchUsers($statement)
     {
         $dataSet = [];
         while ($row = $statement->fetch()){
-            $dataSet[]  = new UserData($row,$this->getFriendshipList($row['id']));
+            $dataSet[]  = new UserData($row);
         }
+//        var_dump($dataSet);
         return $dataSet;
     }
 
@@ -51,6 +52,18 @@ class UserDataSet
 
         $sqlQuery = "SELECT * FROM user_data WHERE ".$attribute." = ?";
         return $this->fetchUsers($this->executeQuery($sqlQuery));
+    }
+
+    public function fetchUserById($userID) {
+        $sqlQuery = "SELECT * FROM user_data WHERE id = :userID";
+        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
+        $statement->bindParam(':userID',$userID);
+        $statement->execute(); //Executes the PDO statement
+
+        //Assigns the user fetched by ID or does nothing if user not found,
+        $user = $statement->fetch();
+        return new UserData($user, $this->getFriendshipList($user['id']));
+
     }
 
     //Checks whether a person with the username and password already exists - if so, returns the user
@@ -119,7 +132,10 @@ class UserDataSet
             //Or add new friendship
             $sqlQuery = "INSERT INTO friendship_status(friend1, friend2, relationship) VALUES (?,?,?) ";
             $this->executeQuery($sqlQuery,[$userID, $friendID, $relationship]);
-
+        }
+        if($relationship == 0) {
+            $sqlQuery = "DELETE FROM friendship_status WHERE friend1 = ? AND friend2 = ?";
+            $this->executeQuery($sqlQuery,[$userID, $friendID]);
         }
     }
     //Returns a list of friends
@@ -138,6 +154,8 @@ class UserDataSet
         return $dataSet;
 
     }
+
+    //Returns the ID of the friendship between two people.
     public function getFriendshipID($friend1, $friend2)
     {
             $sqlQUery = "SELECT * FROM friendship_status WHERE friend1 = ? AND friend2 = ?";

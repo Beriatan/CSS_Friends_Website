@@ -1,6 +1,7 @@
 <?php
 require_once('Models/UserDataSet.php');
 require_once('Models/UserData.php');
+require_once('Views/loginForm.phtml');
 
 
 if (isset($_POST["login"])) {
@@ -15,8 +16,8 @@ if (isset($_POST["login"])) {
         echo "Incorrect username or password";
     }
     else {
-        echo "logged in successfuly";
-        session_start();
+        //echo "logged in successfuly";
+
         $_SESSION["login"] = $username;
         $_SESSION["uid"] = $isLoggedIn[0]->getId();
     }
@@ -25,7 +26,7 @@ if(isset($_POST["logout"]))
 {
     unset($_COOKIE['searchedTerm']);//delete the cookie after displaying the list
     setcookie('searchedTerm', '', time() - 3600);
-    echo "Logout user";
+    //echo "Logout user";
     unset($_SESSION["login"]);
     $userDataSet = null;
     session_destroy();

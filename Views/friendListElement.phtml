@@ -8,31 +8,32 @@ function displayFriendshipStatus($userID,$friendID)
     //Values - 0-not friends 1- pending, 2-accept/deny - 3 -friends
     $temp = new UserDataSet();
     $friendshipStatus = $temp->getFriendshipStatus($userID,$friendID);
-    if($friendshipStatus == 0) echo '<form class="form-inline" action="../changeFriendshipStatus.php" method="post"><button class="btn btn-success float-right" name="changeFriend" value="invite" type="submit">Invite</button><input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form>';
-    else if($friendshipStatus == 1) echo 'Invitation pending';
-    else if($friendshipStatus == 2) echo '<form class="form-inline" action="../changeFriendshipStatus.php" method="post"><button class="btn btn-success float-right" name="changeFriend" value="accept" type="submit">Accept</button><button class="btn btn-success float-right" name="changeFriend" value="deny" type="submit">Deny<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
-    else if($friendshipStatus == 3) echo '<form class="form-inline" action="../changeFriendshipStatus.php" method="post"><button class="btn btn-success float-right" name="changeFriend" value="remove" type="submit">Remove Friend<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
+    if($friendshipStatus == 0) return '<form action="../changeFriendshipStatus.php" method="post"><button class="btn btn-success" name="changeFriend" value="invite" type="submit">Invite</button><input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form>';
+    else if($friendshipStatus == 1) return 'Invitation pending';
+    else if($friendshipStatus == 2) return '<form action="../changeFriendshipStatus.php" method="post"><button class="btn btn-success" name="changeFriend" value="accept" type="submit">Accept</button><button class="btn btn-success float-right" name="changeFriend" value="deny" type="submit">Deny<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
+    else if($friendshipStatus == 3) return '<form action="../changeFriendshipStatus.php" method="post"><button class="btn btn-success" name="changeFriend" value="remove" type="submit">Remove Friend<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
     //.displayFriendshipStatus($friendshipStatus) .
 }
 
-function listUserDetails($userData){
+function listUserDetails(UserData $userData){
     $element = '
 
-    <li class="list-group-item p-3 ">
-        <div class="d-inline-block row">
-            <img src="'.$userData->getPhoto().'" class="img-fluid float-left p-3" style="width: 10rem;">
-            <div class="p-2 d-inline-block align-middle">'.$userData->getFirstName(). '</div>
-            <div class="p-2 d-inline-block">'.$userData->getLastName().'</div>
-            <div class="p-2 d-inline-block">'.$userData->getEmail().'</div>
-            <div class="p-2 d-inline-block">'.$userData->getPhoneNumber().'</div>
-            <div class="p-2 d-inline-block">'.$userData->getUsername().'</div>
-            <div class="p-2 d-inline-block">'.$userData->getLatitude().'</div>
-            <div class="p-2 d-inline-block">'.$userData->getLongitude().'</div>
+    <div class="col">
+       <div class="card m-1 p-1 mt-2"  style="width: 20rem">
+            <img class="img-thumbnail" src="'.$userData->getPhoto().'"  class="card-img-top" alt="Friend\'s Photo">
+        <div class="card-body">
+            <h5 class="card-title">'.$userData->getFirstName().' '.$userData->getLastName().'</h5>
+            <h6 class="card-subtitle mb-2 text-muted">'.$userData->getUsername().'</h6>
+            <div class="p-2">'.$userData->getEmail().'</div>
+            <div class="p-2">'.$userData->getPhoneNumber().'</div>
+            <div class="p-2">'.$userData->getLatitude().'</div>
+            <div class="p-2">'.$userData->getLongitude().'</div>
+            </div>
+        <div class="card-footer" style="height: 4em">
+            <small class="text-muted">'.displayFriendshipStatus($_SESSION["uid"],$userData->getID()).'</small>
         </div>
-        '.displayFriendshipStatus($_SESSION["uid"],$userData->getID()).'
-
-
-    </li>';
+       </div>
+    </div>';
 
     echo $element;
 
