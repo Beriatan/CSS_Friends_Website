@@ -13,26 +13,18 @@ require_once('login.php');
 require_once('Views/index.phtml');
 require_once('Views/friendListElement.phtml');
 
+if(isset($_GET['register'])){
+    require_once('registration.php');
+}
+//$userDataSet = new UserDataSet();
+////$userDataSet->rehashPassword(500, 'michal');
+//$userDataSet->encryptAllPasswords();
 
-if(isset($_POST['listFriends']))
+
+if(isset($_GET['listFriends']))
 {
+    require_once('listFriends.php');
 
-    $userDataSet = new UserDataSet();
-    $foundUsers = [];
-    $foundUsers = $userDataSet->getFriendshipList($_SESSION['uid']);
-    $usersData = [];
-
-    foreach($foundUsers as $friendship)
-    {
-        $friendID = $friendship->getFriend2();
-        array_push($usersData, $userDataSet->fetchUserById($friendID));
-    }
-    if($foundUsers != null){
-        foreach($usersData as $user)
-        {
-            listUserDetails($user);
-        }
-    }
 }
 
 if (isset($_POST["changeFriend"])) {
@@ -58,6 +50,38 @@ if (isset($_POST["changeFriend"])) {
 
 if(isset($_POST["registrationButton"])){
     require_once('registration.php');
+}
+
+if(isset($_GET['showAll'])){
+    require_once('Views/friendListElement.phtml');
+
+
+//List all users non-public data
+    $userDataSet = new UserDataSet();
+    $usersPerPage = $userDataSet->countUsers();
+    $resultsPerPage = 10;
+    $view->numberOfPages = ceil($usersPerPage / $resultsPerPage);
+
+    if(!isset($_GET['page'])){
+        $page = 1;
+    }else {
+        $page = $_GET['page'];
+    }
+
+    $users = $userDataSet->fetchAllUsers($page, $resultsPerPage );
+    echo '<div class="card-group">';
+    if(!isset($_SESSION["login"])){
+        foreach($users as $user)
+        {
+            listPublicUserDetails($user);
+        }} else {
+        foreach($users as $user)
+        {
+            listUserDetails($user);
+        }
+    }
+    echo '</div>';
+    require_once('Views/pagination.phtml');
 }
 
 

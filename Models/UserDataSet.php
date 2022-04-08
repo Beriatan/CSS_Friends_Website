@@ -50,16 +50,9 @@ class UserDataSet
         $statement->execute();
         $result = $statement->fetch();
         return $result['COUNT(*)'];
-
-
-    }
-    //Gets the user by ID
-    public function fetchUserByAttributeAndValue($attribute, $value) {
-
-        $sqlQuery = "SELECT * FROM user_data WHERE ".$attribute." = ?";
-        return $this->fetchUsers($this->executeQuery($sqlQuery));
     }
 
+    //Returns the user with its corresponding ID in the database
     public function fetchUserById($userID) {
         $sqlQuery = "SELECT * FROM user_data WHERE id = :userID";
         $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
@@ -68,18 +61,39 @@ class UserDataSet
 
         //Assigns the user fetched by ID or does nothing if user not found,
         $user = $statement->fetch();
-        return new UserData($user, $this->getFriendshipList($user['id']));
+        return new UserData($user, $this->getFriendshipList($user['id'], 4));
 
     }
 
     //Checks whether a person with the username and password already exists - if so, returns the user
+    //It also checks whether correct password has been entered
     public function authenticateCredentials($username, $password) {
-        $sqlQuery = 'SELECT * 
+        //Extract the data of requested username.
+        $sqlQuery = 'SELECT id,password_hash 
                      FROM user_data
-                     WHERE username = ? AND password_encrypted= ?';  //Prepare the query
+                     WHERE username = :uname';  //Prepare the query
+        //preparing the PDO statement
+        $statement = $this->dbHandle->prepare($sqlQuery);
+        //executing query
+        $statement->bindParam(':uname', $username);
+        $statement->execute();
+        $hashed_pass = $statement->fetch();
+        if($hashed_pass != null){
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+//            var_dump($hashed_pass['id']);
+//            var_dump($hash);
+//            var_dump($hashed_pass['password_hash']);
 
-        return $this->fetchUsers($this->executeQuery($sqlQuery, [$username, $password]));
+            $dataSet = [];
+            if(password_verify($password, $hashed_pass['password_hash']))
+            {
+                array_push($dataSet, $this->fetchUserById($hashed_pass['id']));
+                return $dataSet;
+            }
+        }
     }
+
+
     //Adds the new user to the database - if user exists, returns to the registration page with warning
     public function registerUser($username, $first_name, $last_name, $email, $phone_number, $password)
     {
@@ -90,8 +104,9 @@ class UserDataSet
             $photoLink = '/images/people/person4.jpg';//APPLY PHOTO - this option needs to be added
             $lat = '15';
             $long = '15';
-            $sqlQuery = "INSERT INTO user_data(first_name, last_name, email,phone_number,username,password_encrypted,latitude, longitude,photo)
-                         VALUES(:fname,:lname,:email,:pnumber,:uname,:pwd,:lat,:long,:photolink);";
+            $hashedPass = password_hash($password, PASSWORD_DEFAULT);
+            $sqlQuery = "INSERT INTO user_data(first_name, last_name, email,phone_number,username,latitude, longitude,photo, password_hash)
+                         VALUES(:fname,:lname,:email,:pnumber,:uname,:pwd,:lat,:long,:photolink,:hashedPass);";
 
             //Prepare and execute query to add to the user_data database
             $statement = $this->dbHandle->prepare($sqlQuery);
@@ -100,10 +115,10 @@ class UserDataSet
             $statement->bindParam(':email', $email);
             $statement->bindParam(':pnumber', $phone_number);
             $statement->bindParam(':uname', $username);
-            $statement->bindParam(':pwd', $password);
             $statement->bindParam(':lat', $lat);
             $statement->bindParam(':long', $long);
             $statement->bindParam(':photolink', $photoLink);
+            $statement->bindParam(':hashedPass', $hashedPass);
             $statement->execute();
         }
     }
@@ -121,9 +136,15 @@ class UserDataSet
         $statement->execute(); //Executes the PDO statement
         $this->fetchUsers($statement);
     }
+
+    public function fetchUserByAttributeAndValue($attribute, $value) {
+
+        $sqlQuery = "SELECT * FROM user_data WHERE ".$attribute." = ?";
+        return $this->fetchUsers($this->executeQuery($sqlQuery));
+    }
+
+
     //Changes relationship status between users.
-
-
     public function updateFriendship($userID, $friendID, $relationship){
 
         $friendshipID = $this->getFriendshipID($userID, $friendID);
@@ -145,20 +166,28 @@ class UserDataSet
         }
     }
     //Returns a list of friends
-    public function getFriendshipList($userID){
-        $sqlQuery = 'SELECT DISTINCT *
+    //Status 0 - no friends, 1 -pending, 2-accept/deny, 3-friends, 4-all relationships
+    public function getFriendshipList($userID, $relationshipStatus) : mixed{
+        if($relationshipStatus == 4){
+            $sqlQuery = 'SELECT DISTINCT *
                      FROM user_data.friendship_status
                      WHERE friend1 = :id';
-
+        }else {
+            $sqlQuery = 'SELECT DISTINCT *
+                     FROM user_data.friendship_status
+                     WHERE friend1 = :id AND relationship = :relStatus';
+        }
         $statement = $this->dbHandle->prepare($sqlQuery);
         $statement->bindParam(':id',$userID);
+        if($relationshipStatus != 4){
+            $statement->bindParam(':relStatus', $relationshipStatus);
+        }
         $statement->execute();
         $dataSet = [];
         while ($row = $statement->fetch()){
             $dataSet[] = new Friendship($row);
         }
         return $dataSet;
-
     }
 
     //Returns the ID of the friendship between two people.
@@ -175,10 +204,7 @@ class UserDataSet
              }else{
                  return 0;
             }
-
-
     }
-
     //Gets the information about friendship status between user and friend
     public function getFriendshipStatus($userID, $friendID){
         $sqlQuery = 'SELECT *
@@ -198,7 +224,16 @@ class UserDataSet
         }else{
             return 0;
         }
+    }
 
+    //Rehashes the user password
+    public function rehashPassword($userID, $password){
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $sqlQuery = 'UPDATE user_data SET password_hash = :phash WHERE id = :id';
+        $statement = $this->dbHandle->prepare($sqlQuery);
+        $statement->bindParam(':phash', $hash);
+        $statement->bindParam(':id', $userID);
+        $statement->execute();
     }
 
 

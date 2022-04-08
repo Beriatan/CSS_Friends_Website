@@ -6,7 +6,7 @@ require_once('Models/Database.php');
 class UserData
 {
 
-    protected $id, $first_name, $last_name, $email, $phone_number, $username, $password_encrypted, $latitude, $longitude, $photo;
+    protected $id, $first_name, $last_name, $email, $phone_number, $username, $password_hash, $latitude, $longitude, $photo;
     protected $friendsList;
 
 
@@ -20,10 +20,10 @@ class UserData
         $this->email = $db_row["email"];
         $this->phone_number = $db_row["phone_number"];
         $this->username = $db_row["username"];
-        $this->password_encrypted = $db_row["password_encrypted"];
         $this->latitude = $db_row["latitude"];
         $this->longitude = $db_row["longitude"];
         $this->photo = $db_row["photo"];
+        $this->password_hash = $db_row["password_hash"];
         $this->friendslist = $friendsList;
     }
     /**
@@ -79,7 +79,7 @@ class UserData
      */
     public function getPassword(): mixed
     {
-        return $this->password_encrypted;
+        return $this->password_hash;
     }
 
     /**
