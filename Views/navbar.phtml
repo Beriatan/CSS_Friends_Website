@@ -1,10 +1,6 @@
 <?php require_once 'template/header.phtml';
 require_once './login.php';?>
 
-
-
-
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="index.php"><img class="navbar-left" src="images/logo.transparent.gif" id="Logo" height="50vn" alt="logo" ></a>
@@ -32,16 +28,15 @@ require_once './login.php';?>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="#">Invite/accept friends</a></li>
                         <li><a class="dropdown-item" href="index.php?listFriends=true">List Friends</a></li>
-                        <li><form method="post" class="mb-0" action=""><button class="btn btn-light  my02 my-sm-0 bg-transparent w-100" 
-                                    type="submit" name="showMap" id="showMapButton" aria-label="Show Map Of Friends"><i class="bi bi-geo-alt"></i> Map of Friends</button> </form></li>
+                        <li><a class="dropdown-item" href="index.php?map=true"><i class="bi bi-geo-alt"></i> Map of Friends</a></li>
                     </ul>
                 </li>';} ?>
                 <li class="nav-item px-5">
-                    <form class="d-flex">
+                    <form class="d-flex" method="post" action="index.php">
                         <div class="input-group">
                             <input type="text" class="form-control" name="searchField" type="search" id="findFriends" placeholder="search..." aria-label="Search" aria-describedby="search">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" name="search" type="submit">Button</button>
+                                <button class="btn btn-outline-secondary" name="search" type="submit">Search</button>
                             </div>
                         </div>
                     </form></li>

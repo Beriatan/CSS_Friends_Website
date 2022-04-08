@@ -12,7 +12,7 @@ require_once('Views/index.phtml');
 require_once('login.php');
 require_once('Views/index.phtml');
 require_once('Views/friendListElement.phtml');
-
+require_once('search.php');
 if(isset($_GET['register'])){
     require_once('registration.php');
 }
@@ -51,12 +51,14 @@ if (isset($_POST["changeFriend"])) {
 if(isset($_POST["registrationButton"])){
     require_once('registration.php');
 }
+if(isset($_GET['map'])){
+    require_once('Views/map.phtml');
+}
 
 if(isset($_GET['showAll'])){
     require_once('Views/friendListElement.phtml');
 
 
-//List all users non-public data
     $userDataSet = new UserDataSet();
     $usersPerPage = $userDataSet->countUsers();
     $resultsPerPage = 10;
@@ -70,6 +72,8 @@ if(isset($_GET['showAll'])){
 
     $users = $userDataSet->fetchAllUsers($page, $resultsPerPage );
     echo '<div class="card-group">';
+
+    //Display detailed data if the user is logged in, otherwise - display basic data
     if(!isset($_SESSION["login"])){
         foreach($users as $user)
         {

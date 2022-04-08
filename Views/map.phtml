@@ -1,0 +1,41 @@
+<div id="Map" style="width:800px;height:600px"></div>
+
+<script src="../OpenLayers-2.13.1/OpenLayers.js"></script>
+<script>
+
+    var locations = [
+        ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],['Bondi Beach', -33.890542, 151.274856, 4],['Coogee Beach', -33.923036, 151.259052, 5],  ['Maroubra Beach', -33.950198, 151.259302, 1],['Cronulla Beach', -34.028249, 151.157507, 3]
+    ];
+
+    var lat            = -33.89;
+    var lon            = 151.274856;
+    var zoom           = 11;
+
+    var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
+    var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+    var position       = new OpenLayers.LonLat(lon, lat).transform( fromProjection, toProjection);
+
+    map = new OpenLayers.Map("Map");
+    var mapnik         = new OpenLayers.Layer.OSM();
+    map.addLayer(mapnik);
+
+    // http://dev.openlayers.org/docs/files/OpenLayers/Marker-js.html
+
+    // make a marker layer
+    var markers = new OpenLayers.Layer.Markers( "Markers" );
+    map.addLayer(markers);
+
+    locations.forEach(createMarker)
+
+    function createMarker(item,index)
+    {
+        // show the data in the console
+        console.log(item[0],item[2], item[1]);
+        // create a marker from the data
+        let mposition = new OpenLayers.LonLat(item[2], item[1]).transform( fromProjection, toProjection);
+        // place marker on the map layer
+        markers.addMarker(new OpenLayers.Marker(mposition));
+    }
+
+    map.setCenter(position, zoom);
+</script>

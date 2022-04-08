@@ -30,7 +30,7 @@ class UserDataSet
     {
         $dataSet = [];
         while ($row = $statement->fetch()){
-            $dataSet[]  = new UserData($row,  $this->getFriendshipList($row['id']) );
+            $dataSet[]  = new UserData($row,  $this->getFriendshipList($row['id'], 4) );
         }
         return $dataSet;
     }
@@ -125,8 +125,6 @@ class UserDataSet
     //Find users based on search query
     public function search($searchTerm)
     {
-        $splitSearch = explode(",", $searchTerm);
-
         $searchedTerm = '%'.$searchTerm.'%';
         $sqlQuery = "SELECT * FROM user_data
                      WHERE first_name 
@@ -134,15 +132,14 @@ class UserDataSet
         $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
         $statement->bindParam(':query1',$searchedTerm);
         $statement->execute(); //Executes the PDO statement
-        $this->fetchUsers($statement);
+        return $this->fetchUsers($statement);
     }
-
+    //Returns the users based ont he attribute and value passed to the database
     public function fetchUserByAttributeAndValue($attribute, $value) {
 
         $sqlQuery = "SELECT * FROM user_data WHERE ".$attribute." = ?";
         return $this->fetchUsers($this->executeQuery($sqlQuery));
     }
-
 
     //Changes relationship status between users.
     public function updateFriendship($userID, $friendID, $relationship){
@@ -167,7 +164,7 @@ class UserDataSet
     }
     //Returns a list of friends
     //Status 0 - no friends, 1 -pending, 2-accept/deny, 3-friends, 4-all relationships
-    public function getFriendshipList($userID, $relationshipStatus) : mixed{
+    public function getFriendshipList($userID, $relationshipStatus){
         if($relationshipStatus == 4){
             $sqlQuery = 'SELECT DISTINCT *
                      FROM user_data.friendship_status
