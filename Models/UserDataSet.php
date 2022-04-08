@@ -1,9 +1,4 @@
 <?php
-
-require_once('Models/UserData.php');
-require_once('Models/Database.php');
-require_once('Models/Friendship.php');
-
 class UserDataSet
 {
     protected $dbHandle, $dbInstance;
@@ -11,7 +6,6 @@ class UserDataSet
     public function __construct() {
         $this->dbInstance = Database::getInstance();
         $this->dbHandle = $this->dbInstance->getDbConnection();
-        if(session_id() == '') session_start();
     }
 
     //Used to save values in the session variable, so the query is loaded once, rather than each time when data is required.
@@ -38,14 +32,26 @@ class UserDataSet
         while ($row = $statement->fetch()){
             $dataSet[]  = new UserData($row,  $this->getFriendshipList($row['id']) );
         }
-//        var_dump($dataSet);
         return $dataSet;
     }
 
     //Returns all users as an array
-    public function fetchAllUsers() {
-        $sqlQuery = 'SELECT * FROM user_data';
+    public function fetchAllUsers($page, $usersPerPage) {
+        $pageFirstResult = ($page-1) * $usersPerPage;
+        $sqlQuery = 'SELECT * FROM user_data LIMIT '.$pageFirstResult .','.$usersPerPage;
         return $this->fetchUsers($this->executeQuery($sqlQuery));
+    }
+
+    //Returns the number of all users in the database.
+    // Extracted only value from the column COUNT(*) to mitigate returned array form
+    public function countUsers(){
+        $sqlQuery = 'SELECT COUNT(*) FROM user_data';
+        $statement = $this->dbHandle->prepare($sqlQuery);
+        $statement->execute();
+        $result = $statement->fetch();
+        return $result['COUNT(*)'];
+
+
     }
     //Gets the user by ID
     public function fetchUserByAttributeAndValue($attribute, $value) {

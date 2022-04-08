@@ -12,6 +12,7 @@ if(isset($_POST["register"])) {
 
     $userDataSet = new UserDataSet();
     $userDataSet->registerUser($username,$firstName,$lastName,$email,$phoneNumber,$password);
-
 }
+
 require_once('Views/registration.phtml');
+
