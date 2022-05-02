@@ -1,17 +1,6 @@
 <?php
 
-//Displays different buttons depending on type of friendship
-function displayFriendshipStatus($userID,$friendID)
-{
-    //Values - 0-not friends 1- pending, 2-accept/deny - 3 -friends
-    $temp = new UserDataSet();
-    $friendshipStatus = $temp->getFriendshipStatus($userID,$friendID);
-    if($friendshipStatus == 0) return '<form  method="post"><button class="btn btn-success" name="changeFriend" value="invite" type="submit">Invite</button><input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form>';
-    else if($friendshipStatus == 1) return 'Invitation pending';
-    else if($friendshipStatus == 2) return '<form  method="post"><button class="btn btn-success" name="changeFriend" value="accept" type="submit">Accept</button><button class="btn btn-success float-right" name="changeFriend" value="deny" type="submit">Deny<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
-    else if($friendshipStatus == 3) return '<form  method="post"><button class="btn btn-success" name="changeFriend" value="remove" type="submit">Remove Friend<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
-    //.displayFriendshipStatus($friendshipStatus) .
-}
+
 
 function listUserDetails(UserData $userData){
     $element = '
@@ -57,3 +46,16 @@ function listUserDetails(UserData $userData){
      echo $element;
 
  }
+
+//Displays different buttons underneath the user data depending on type of friendship
+function displayFriendshipStatus($userID,$friendID)
+{
+    //Values - 0-not friends 1- pending, 2-accept/deny - 3 -friends
+    $temp = new UserDataSet();
+    $friendshipStatus = $temp->getFriendshipStatus($userID,$friendID);
+    if($friendshipStatus == 0) return '<form  method="post"><button class="btn btn-success" name="changeFriend" value="invite" type="submit">Invite</button><input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form>';
+    else if($friendshipStatus == 1) return 'Invitation pending';
+    else if($friendshipStatus == 2) return '<form  method="post"><button class="btn btn-success" name="changeFriend" value="accept" type="submit">Accept</button><button class="btn btn-success float-right" name="changeFriend" value="deny" type="submit">Deny<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
+    else if($friendshipStatus == 3) return '<form  method="post"><button class="btn btn-danger" name="changeFriend" value="remove" type="submit">Remove Friend<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
+    //.displayFriendshipStatus($friendshipStatus) .
+}

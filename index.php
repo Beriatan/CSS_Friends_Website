@@ -27,6 +27,7 @@ if(isset($_GET['listFriends']))
 
 }
 
+//Change friendhsip status
 if (isset($_POST["changeFriend"])) {
 
     $userID = filter_var($_POST["userID"]);
