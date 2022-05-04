@@ -27,7 +27,7 @@ if(isset($_GET['listFriends']))
 
 }
 
-//Change friendhsip status
+//Change friendship status
 if (isset($_POST["changeFriend"])) {
 
     $userID = filter_var($_POST["userID"]);
@@ -55,6 +55,9 @@ if(isset($_POST["registrationButton"])){
 if(isset($_GET['map'])){
     require_once('Views/map.phtml');
 }
+if(isset($_GET['search'])){
+    require_once('search.php');
+}
 
 if(isset($_GET['showAll'])){
     require_once('Views/friendListElement.phtml');
@@ -71,7 +74,7 @@ if(isset($_GET['showAll'])){
         $page = $_GET['page'];
     }
 
-    $users = $userDataSet->fetchAllUsers($page, $resultsPerPage );
+    $users = $userDataSet->fetchAllUsersPerPage($page, $resultsPerPage );
     echo '<div class="card-group">';
 
     //Display detailed data if the user is logged in, otherwise - display basic data
