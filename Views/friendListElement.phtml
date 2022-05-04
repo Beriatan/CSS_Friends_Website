@@ -1,7 +1,8 @@
 <?php
-
-
-
+/**
+ * Lists complete information about the user in a card form
+ * @param UserData $userData
+ */
 function listUserDetails(UserData $userData){
     $element = '
 
@@ -27,7 +28,11 @@ function listUserDetails(UserData $userData){
 
 }
 
- function listPublicUserDetails($userData){
+/**
+ * Lists limited information about the users in a card form - used when not logged-in
+ * @param $userData - a single line of UserData object
+ */
+ function listPublicUserDetails(UserData $userData){
 
      $element = '
     <div class="col">
@@ -47,7 +52,9 @@ function listUserDetails(UserData $userData){
 
  }
 
-//Displays different buttons underneath the user data depending on type of friendship
+/**
+ * Displays different buttons underneath the user data depending on type of friendship
+ * */
 function displayFriendshipStatus($userID,$friendID)
 {
     //Values - 0-not friends 1- pending, 2-accept/deny - 3 -friends
@@ -58,4 +65,20 @@ function displayFriendshipStatus($userID,$friendID)
     else if($friendshipStatus == 2) return '<form  method="post"><button class="btn btn-success" name="changeFriend" value="accept" type="submit">Accept</button><button class="btn btn-success float-right" name="changeFriend" value="deny" type="submit">Deny<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
     else if($friendshipStatus == 3) return '<form  method="post"><button class="btn btn-danger" name="changeFriend" value="remove" type="submit">Remove Friend<input type="hidden" id="userID" name="userID" value="' .$userID.'"><input type="hidden" id="friendID" name="friendID" value="'.$friendID.'"></form></button>';
     //.displayFriendshipStatus($friendshipStatus) .
+}
+
+
+
+/**
+ * Displays basic friend's details as a list element
+ */
+
+function displayFriendsDetailsListElement(UserData $userData){
+    echo '<li class="list-group-item d-flex justify-content-between align-items-center" ">
+          <span class="w-25"><img class="img-fluid rounded" src="'.$userData->getPhoto().'"  class="card-img-top" alt="Friend\'s Photo"></span>
+          <span>'.$userData->getFirstName().' '.$userData->getLastName().'</span>
+          <span></span>
+          <span>Location</span>
+          <span class="badge bg-success rounded-pill" id="distance">20mi</span>
+          </li>';
 }

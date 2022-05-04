@@ -26,7 +26,8 @@ require_once './login.php';?>
                         Friends...
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Invite/accept friends</a></li>
+                        <li><a class="dropdown-item" href="Views/openstreetmapexample2popups.html">Invite/accept friends</a></li>
+                        <li><a class="dropdown-item" href="Views/cemetery.phtml">Cemetery</a></li>
                         <li><a class="dropdown-item" href="index.php?listFriends=true">List Friends</a></li>
                         <li><a class="dropdown-item" href="index.php?map=true"><i class="bi bi-geo-alt"></i> Map of Friends</a></li>
                     </ul>
@@ -34,13 +35,13 @@ require_once './login.php';?>
                 <li class="nav-item px-5">
                     <form class="d-flex" method="post" action="index.php">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="searchField" type="search" id="findFriends" placeholder="search..." aria-label="Search" aria-describedby="search">
+                            <input type="text" class="form-control" name="searchField" type="search" onkeyup="showHint(this.value)" id="findFriends" placeholder="search..." aria-label="Search" aria-describedby="search">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary" name="search" type="submit">Search</button>
                             </div>
                         </div>
                     </form></li>
-                <li class="nav-item"></li>
+                <li class="nav-item"><p>Hint: <span id="txtHint"></span></p></li>
                 <?php
                 //Display log in button if not logged in
                 if(!isset($_SESSION["login"])) {
@@ -62,5 +63,20 @@ require_once './login.php';?>
         </div>
     </div>
 </nav>
+<script>
+    function showHint(str) {
+        if (str.length == 0) {
+            document.getElementById("txtHint").innerHTML = "";
+            return;
+        } else {
+            const xmlhttp = new XMLHttpRequest();
+            xmlhttp.onload = function() {
+                document.getElementById("txtHint").innerHTML = this.responseText;
+            }
+            xmlhttp.open("GET", "gethint.php?q=" + str);
+            xmlhttp.send();
+        }
+    }
+</script>
 
 

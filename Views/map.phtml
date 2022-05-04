@@ -1,41 +1,116 @@
-<div id="Map" style="width:1024px;height:600px"></div>
+<!-- https://harrywood.co.uk/maps/examples/openlayers/marker-popups.html -->
 
+<div id="Map Wrapper" style="display:flex">
+<div id="mapdiv" style="width:60%;height:600px"></div>
 <script src="../OpenLayers-2.13.1/OpenLayers.js"></script>
+<script src="../OpenLayers-2.13.1/OpenLayers.js"></script>
+
+    <!-- download the library here: https://openlayers.org/two/ -->
+
+<?php $userDataSet = new UserDataSet();
+$foundUsers = [];
+$foundUsers = $userDataSet->getFriendshipList($_SESSION['uid'], 3);
+$usersData = [];
+
+foreach ($foundUsers as $friendship) {
+    $friendID = $friendship->getFriend2();
+    array_push($usersData, $userDataSet->fetchUserById($friendID));
+} ?>
 <script>
+        map = new OpenLayers.Map("mapdiv");
+        mainLayer = new OpenLayers.Layer.OSM()
+        map.addLayer(mainLayer);
 
-    var locations = [
-        ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],['Bondi Beach', -33.890542, 151.274856, 4],['Coogee Beach', -33.923036, 151.259052, 5],  ['Maroubra Beach', -33.950198, 151.259302, 1],['Cronulla Beach', -34.028249, 151.157507, 3]
-    ];
+        epsg4326 =  new OpenLayers.Projection("EPSG:4326"); //WGS 1984 projection
+        projectTo = map.getProjectionObject(); //The map projection (Spherical Mercator)
 
-    var lat            = 53.511640;
-    var lon            = -2.335810;
-    var zoom           = 11;
+        // if(geolocation in navigator) {
+        //     //performn something
+        // }else{
+        //     //geolocation is not available
+        // }
+        // navigator.geolocation.getCurrentPosition(position => {/*do something here with location*/});
 
-    var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
-    var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
-    var position       = new OpenLayers.LonLat(lon, lat).transform( fromProjection, toProjection);
+        var lonLat = new OpenLayers.LonLat( -0.1279688 ,51.5077286 ).transform(epsg4326, projectTo);
 
-    map = new OpenLayers.Map("Map");
-    var mapnik         = new OpenLayers.Layer.OSM();
-    map.addLayer(mapnik);
 
-    // http://dev.openlayers.org/docs/files/OpenLayers/Marker-js.html
+        var zoom= 2;
+        map.setCenter (lonLat, zoom);
 
-    // make a marker layer
-    var markers = new OpenLayers.Layer.Markers( "Markers" );
-    map.addLayer(markers);
+        var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
 
-    locations.forEach(createMarker)
+        // Define markers as "features" of the vector layer:
+        // var feature = new OpenLayers.Feature.Vector(
+        //     new OpenLayers.Geometry.Point( -0.1279688, 51.5077286 ).transform(epsg4326, projectTo),
+        //     {description:'This is the value of<br>the description attribute.' + '<img style=\"width:50px; padding: 1px;\" src="../images/nelson.jpg">'} ,
+        //     {externalGraphic: 'Views/marker.png', graphicHeight: 30, graphicWidth: 30, graphicXOffset:-12, graphicYOffset:-25  }
+        // );
+        // vectorLayer.addFeatures(feature);
+        <?php
+        if($foundUsers != null){
+            foreach($usersData as $user)
+            {
+                echo "var feature = new OpenLayers.Feature.Vector(\n\t 
+                        new OpenLayers.Geometry.Point(".$user->getLongitude()."," .$user->getLatitude().").transform(epsg4326, projectTo),\n
+                        {description:'<h4>" .$user->getFirstName()." ".$user->getLastName()." </h4>' + '<img style=\"width:60px\" src=\"../".$user->getPhoto(). "\"> <span class=\"badge bg-success rounded-pill\" id=\"distance\">20mi</span>'} ,\n
+                        {externalGraphic: '".$user->getPhoto(). "', graphicHeight: 40, graphicWidth: 40, graphicXOffset:-20, graphicYOffset:-25 }
+                         );\n
+                         vectorLayer.addFeatures(feature);\n";
+            }
+        }
+        ?>
 
-    function createMarker(item,index)
-    {
-        // show the data in the console
-        console.log(item[0],item[2], item[1]);
-        // create a marker from the data
-        let mposition = new OpenLayers.LonLat(item[2], item[1]).transform( fromProjection, toProjection);
-        // place marker on the map layer
-        markers.addMarker(new OpenLayers.Marker(mposition));
-    }
+        map.addLayer(vectorLayer);
+        vectorLayer.addFeatures(feature);
 
-    map.setCenter(position, zoom);
+
+
+
+        //Add a selector control to the vectorLayer with popup functions
+        var controls = {
+            selector: new OpenLayers.Control.SelectFeature(vectorLayer, { onSelect: createPopup, onUnselect: destroyPopup })
+        };
+
+        function createPopup(feature) {
+            feature.popup = new OpenLayers.Popup.FramedCloud("pop",
+                feature.geometry.getBounds().getCenterLonLat(),
+                null,
+                '<div class="markerContent">'+feature.attributes.description+'</div>',
+                null,
+                true,
+                function() { controls['selector'].unselectAll(); }
+            );
+            //feature.popup.closeOnMove = true;
+            map.addPopup(feature.popup);
+        }
+
+
+        function destroyPopup(feature) {
+            feature.popup.destroy();
+            feature.popup = null;
+        }
+
+
+        map.addControl(controls['selector']);
+        controls['selector'].activate();
+
 </script>
+<style>
+    #friendsList{height:600px; width:100%;}
+    #friendsList{overflow:hidden; overflow-y:scroll;}
+</style>
+
+<div id="FriendList" style="width:40%; height:600px;border:1px solid green;background-color: white;">
+        <ul id="friendsList" class="list-group">
+            <?php
+
+            if($foundUsers != null){
+                foreach($usersData as $user)
+                {
+                    displayFriendsDetailsListElement($user);
+                }
+            } ?>
+
+        </ul>
+</div>
+</div>

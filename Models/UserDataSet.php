@@ -36,8 +36,14 @@ class UserDataSet
         return $dataSet;
     }
 
-    //Returns all users as an array
-    public function fetchAllUsers($page, $usersPerPage)
+    //Returns a list of all users
+    public function fetchAllUsers() {
+        $sqlQuery = 'SELECT * FROM user_data';
+        return $this->fetchUsers($this->executeQuery($sqlQuery));
+    }
+
+    //Returns all users as an array, limited by page number and number of users
+    public function fetchAllUsersPerPage($page, $usersPerPage)
     {
         $pageFirstResult = ($page - 1) * $usersPerPage;
         $sqlQuery = 'SELECT * FROM user_data LIMIT ' . $pageFirstResult . ',' . $usersPerPage;
@@ -85,9 +91,6 @@ class UserDataSet
         $hashed_pass = $statement->fetch();
         if ($hashed_pass != null) {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-//            var_dump($hashed_pass['id']);
-//            var_dump($hash);
-//            var_dump($hashed_pass['password_hash']);
 
             $dataSet = [];
             if (password_verify($password, $hashed_pass['password_hash'])) {
@@ -140,6 +143,16 @@ class UserDataSet
         return $this->fetchUsers($statement);
     }
 
+    //Updates user's lattitude and longitude
+    public function updateLocation($lat, $long, $userID){
+        $sqlQuery = "UPDATE user_data SET latitude = :lat AND longitude = :long WHERE id = :id;";
+        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
+        $statement->bindParam(':lat', $lat);
+        $statement->bindParam(':long', $long);
+        $statement->bindParam(':id', $userID);
+        $statement->execute(); //Executes the PDO statement
+    }
+
     //Returns the users based ont he attribute and value passed to the database
     public function fetchUserByAttributeAndValue($attribute, $value)
     {
@@ -168,6 +181,8 @@ class UserDataSet
             $this->executeQuery($sqlQuery, [$userID, $friendID]);
         }
     }
+
+
     //Returns a list of friends
     //Status 0 - no friends, 1 -pending, 2-accept/deny, 3-friends, 4-all relationships
     public function getFriendshipList($userID, $relationshipStatus)
@@ -183,7 +198,7 @@ class UserDataSet
         }
         $statement = $this->dbHandle->prepare($sqlQuery);
         $statement->bindParam(':id', $userID);
-        if ($relationshipStatus != 4) {
+        if ($relationshipStatus < 4) {
             $statement->bindParam(':relStatus', $relationshipStatus);
         }
         $statement->execute();

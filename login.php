@@ -1,6 +1,7 @@
 <?php
-require_once('Models/UserDataSet.php');
-require_once('Models/UserData.php');
+//include 'autoloader.php';
+//require_once('Models/UserDataSet.php');
+//require_once('Models/UserData.php');
 require_once('Views/loginForm.phtml');
 
 
@@ -13,13 +14,16 @@ if (isset($_POST["login"])) {
 
 
     if (! $isLoggedIn) {
-        echo "Incorrect username or password";
+       // echo "Incorrect username or password";
+        ?><script>window.alert("Incorrect username or password");
+        </script><?php
     }
     else {
         //echo "logged in successfuly";
 
         $_SESSION["login"] = $username;
         $_SESSION["uid"] = $isLoggedIn[0]->getId();
+
     }
 }
 if(isset($_POST["logout"]))
@@ -31,4 +35,6 @@ if(isset($_POST["logout"]))
     $userDataSet = null;
     session_destroy();
 }
+
+
 

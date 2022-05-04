@@ -3,7 +3,7 @@
 require_once('Models/Database.php');
 
 
-class UserData
+class UserData implements JsonSerializable
 {
 
     protected $id, $first_name, $last_name, $email, $phone_number, $username, $password_hash, $latitude, $longitude, $photo;
@@ -115,5 +115,15 @@ class UserData
     }
 
 
-
+    public function jsonSerialize(): mixed
+    { return [
+        '_id' => $this->id,
+        '_firstname' => $this->firstname,
+        '_lastname' => $this->lastname,
+        '_email' => $this->email,
+        '_latitude' => $this->latitude,
+        '_longitude' => $this->longitude,
+        '_photo' => $this->photo
+        ];
+    }
 }
