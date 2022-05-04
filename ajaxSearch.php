@@ -32,12 +32,11 @@ $a[] = "Elizabeth";
 $a[] = "Ellen";
 $a[] = "Wenche";
 $a[] = "Vicky";
-//$userDataSet = new UserDataSet();
-//if(!isset($_SESSION['usersNameSurnameEmail']))
-//{
-//    $_SESSION['usersNameSurnameEmail'] = $userDataSet->fetchAllUsers();
-//    var_dump($_SESSION['usersNameSurnameEmail']);
-//}
+$userDataSet = new UserDataSet();
+$userData = json_encode($userDataSet->searchLimited($_REQUEST["q"]));
+
+var_dump($userData);
+
 // get the q parameter from URL
 $q = $_REQUEST["q"];
 

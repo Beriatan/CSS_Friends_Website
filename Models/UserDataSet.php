@@ -49,6 +49,23 @@ class UserDataSet
         $sqlQuery = 'SELECT * FROM user_data LIMIT ' . $pageFirstResult . ',' . $usersPerPage;
         return $this->fetchUsers($this->executeQuery($sqlQuery));
     }
+    /*
+     * Retrieves top 10 search items
+     */
+    public function searchLimited($searchTerm)
+    {
+        $searchedTerm = '%' . $searchTerm . '%';
+        $sqlQuery = "SELECT * FROM user_data
+                     WHERE first_name 
+                     LIKE :query1 OR last_name LIKE :query1 OR email LIKE :query1 OR username LIKE :query1
+                     LIMIT 10";
+        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
+        $statement->bindParam(':query1', $searchedTerm);
+        $statement->execute();
+        //Executes the PDO statement
+        return $this->fetchUsers($statement);
+
+    }
 
     //Returns the number of all users in the database.
     // Extracted only value from the column COUNT(*) to mitigate returned array form
@@ -257,6 +274,8 @@ class UserDataSet
         $statement->bindParam(':id', $userID);
         $statement->execute();
     }
+
+
 
 
 }

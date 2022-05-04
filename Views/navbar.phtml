@@ -70,10 +70,15 @@ require_once './login.php';?>
             return;
         } else {
             const xmlhttp = new XMLHttpRequest();
-            xmlhttp.onload = function() {
-                document.getElementById("txtHint").innerHTML = this.responseText;
+
+            xmlhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200) {
+                    // document.getElementById("txtHint").innerHTML = this.responseText;
+                    var vic = document.getElementById("txtHint")
+                    vic.innerHTML = this.responseText;
+                }
             }
-            xmlhttp.open("GET", "gethint.php?q=" + str);
+            xmlhttp.open("GET", "ajaxSearch.php?q=" + str);
             xmlhttp.send();
         }
     }

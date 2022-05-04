@@ -118,8 +118,8 @@ class UserData implements JsonSerializable
     public function jsonSerialize(): mixed
     { return [
         '_id' => $this->id,
-        '_firstname' => $this->firstname,
-        '_lastname' => $this->lastname,
+        '_firstname' => $this->first_name,
+        '_lastname' => $this->last_name,
         '_email' => $this->email,
         '_latitude' => $this->latitude,
         '_longitude' => $this->longitude,
