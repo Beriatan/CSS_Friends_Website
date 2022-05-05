@@ -24,11 +24,8 @@
         epsg4326 =  new OpenLayers.Projection("EPSG:4326"); //WGS 1984 projection
         projectTo = map.getProjectionObject(); //The map projection (Spherical Mercator)
 
-        var userLon = 0;
-        var userLat = 0;
-        updateUsersLocation();
 
-        console.log('lon: ' + userLon + 'lat' + userLat);
+
 
 
 
@@ -37,8 +34,7 @@
             x.innerHTML = "Latitude: " + position.coords.latitude +
                 "<br>Longitude: " + position.coords.longitude;
         }
-        var lonLat = new OpenLayers.LonLat( -0.1279688 ,51.5077286 ).transform(epsg4326, projectTo);
-
+        var lonLat = new OpenLayers.LonLat( userLon ,userLat ).transform(epsg4326, projectTo);
 
         var zoom= 2;
         map.setCenter (lonLat, zoom);
@@ -51,16 +47,17 @@
         setInterval(retrieveFriendsData, 10000);
 
         map.addLayer(vectorLayer);
-        // vectorLayer.addFeatures(feature);
         //Add a selector control to the vectorLayer with popup functions
         var controls = {
             selector: new OpenLayers.Control.SelectFeature(vectorLayer, { onSelect: createPopup, onUnselect: destroyPopup })
         };
 
 
-
+        /**
+         * Fetches friends from the database, converts results to Json,
+         * and calls the method to load friend markers on the screen
+         */
         function retrieveFriendsData() {
-
             fetch("ajaxGetFriends.php", {
                 method: 'GET'
             })
@@ -71,10 +68,11 @@
                 .catch((error) => {
                     console.error("Error: " , error);
                 });
-
         }
 
-        //Load all markers on the map from given json data
+        /**
+         * Load all markers on the map from given json data
+         * */
         function loadMarkers(data){
             //Check if received data about the friends is already the same as the one stored on the map
             if(friends != data){
@@ -143,9 +141,15 @@
         }
 
 
+        /**
+         * Event listener for map movement.
+         * After movement is complete, it reads which markers are visible on the screen
+         * And prints them in the friendsList element on the screen.
+         */
         map.events.register("moveend", map, function(evt) {
             var extent = map.getExtent();
             var friendListContainer = document.getElementById('friendsList');
+            //Empty the friend list to prepare it for the new items
             removeAllChildNodes(friendListContainer);
             for (var i = 0, l = vectorLayer.features.length; i < l; i++) {
                 var feature = vectorLayer.features[i];
@@ -154,7 +158,6 @@
                   //Create a new list item
                   var newListItem = document.createElement('li');
                   //Set its bootstrap class
-                  // newListItem.className = "list-group-item d-flex justify-content-between align-items-center container-f";
                   //Set its inner text
                   newListItem.innerHTML =  feature.data.description;
                   friendListContainer.appendChild(newListItem);
@@ -163,7 +166,9 @@
             }
         });
 
-        //Create a small window with user details when clicked
+        /**
+            Create a small window with user details when clicked
+         */
         function createPopup(feature) {
             feature.popup = new OpenLayers.Popup.FramedCloud("pop",
                 feature.geometry.getBounds().getCenterLonLat(),
@@ -176,7 +181,9 @@
             //feature.popup.closeOnMove = true;
             map.addPopup(feature.popup);
         }
-        //Removes focused user window when unclicked
+        /**
+         * Removes focused user window when unclicked
+         * */
         function destroyPopup(feature) {
             feature.popup.destroy();
             feature.popup = null;

@@ -49,23 +49,6 @@ class UserDataSet
         $sqlQuery = 'SELECT * FROM user_data LIMIT ' . $pageFirstResult . ',' . $usersPerPage;
         return $this->fetchUsers($this->executeQuery($sqlQuery));
     }
-    /*
-     * Retrieves top 10 search items
-     */
-    public function searchLimited($searchTerm)
-    {
-        $searchedTerm = '%' . $searchTerm . '%';
-        $sqlQuery = "SELECT * FROM user_data
-                     WHERE first_name 
-                     LIKE :query1 OR last_name LIKE :query1 OR email LIKE :query1 OR username LIKE :query1
-                     LIMIT 10";
-        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
-        $statement->bindParam(':query1', $searchedTerm);
-        $statement->execute();
-        //Executes the PDO statement
-        return $this->fetchUsers($statement);
-
-    }
 
     //Returns the number of all users in the database.
     // Extracted only value from the column COUNT(*) to mitigate returned array form
@@ -147,15 +130,45 @@ class UserDataSet
         }
     }
 
-    //Find users based on search query
-    public function search($searchTerm)
+    /**
+     * Finds users containing input text in their last, first name, email or username
+     * @param $searchTerm - input text
+     * @param $limit - limit the number of queries received
+     * @return array
+     */
+    public function search($searchTerm, $limit = null)
+    {
+        $searchedTerm = '%' . $searchTerm . '%';
+        $sqlQuery = "SELECT DISTINCT * FROM user_data
+                     WHERE first_name 
+                     LIKE :query1 OR last_name LIKE :query1 OR email LIKE :query1 OR username LIKE :query1";
+        if($limit !=null) $sqlQuery .= " LIMIT :limit";
+
+        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
+        if($limit !=null) $statement->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $statement->bindParam(':query1', $searchedTerm);
+        $statement->execute(); //Executes the PDO statement
+        return $this->fetchUsers($statement);
+    }
+
+    /**
+     * Finds users based on attribute and value of that attribute given.
+     * @param $searchTerm
+     * @param $attribute
+     * @param $limit
+     * @return array
+     */
+    public function searchAttributeAndValue($searchTerm, $attribute,  $limit = null)
     {
         $searchedTerm = '%' . $searchTerm . '%';
         $sqlQuery = "SELECT * FROM user_data
-                     WHERE first_name 
-                     LIKE :query1 OR last_name LIKE :query1 OR email LIKE :query1 OR username LIKE :query1";
+                     WHERE :attribute 
+                     LIKE :query1 
+                     LIMIT :limit";
         $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
+        $statement->bindParam(':attribute', $attribute);
         $statement->bindParam(':query1', $searchedTerm);
+        $statement->bindParam(':limit', $limit, PDO::PARAM_INT);
         $statement->execute(); //Executes the PDO statement
         return $this->fetchUsers($statement);
     }
@@ -168,14 +181,6 @@ class UserDataSet
         $statement->bindParam(':long', $long);
         $statement->bindParam(':id', $userID);
         $statement->execute(); //Executes the PDO statement
-    }
-
-    //Returns the users based ont he attribute and value passed to the database
-    public function fetchUserByAttributeAndValue($attribute, $value)
-    {
-
-        $sqlQuery = "SELECT * FROM user_data WHERE " . $attribute . " = ?";
-        return $this->fetchUsers($this->executeQuery($sqlQuery));
     }
 
     //Changes relationship status between users.

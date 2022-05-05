@@ -43,23 +43,34 @@
                 return xhr.responseText;
             }
         }
-        xhr.open(methodType, url, true);
+        xhr.open(methodType, url , true);
         xhr.send();
     }
 
     //Retrieves user's location and updates it in the database as well as in the script
     //Global variables userLat and userLon declared in the script in map.phtml
-    function updateUsersLocation() {
+    var userLon = 0;
+    var userLat = 0;
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(position => {
-                console.log("DUPACYCKI");
-                userLat = position.coords.latitude;
-                userLon = position.coords.longitude;
+                userLat += position.coords.latitude;
+                userLon += position.coords.longitude;
                 console.log('lon: ' + userLon + 'lat' + userLat);});
         } else {
             x.innerHTML = "Geolocation is not supported by this browser.";
         }
-    }
+
+        console.log(userLon +'DUPA' + userLat);
+        // var url = 'index.php?lat=' + userLat + '&long=' + userLon;
+        // let xhr = new XMLHttpRequest();
+        // xhr.onload = function() {
+        //     if(xhr.status == 200) {
+        //         return xhr.responseText;
+        //     }
+        // }
+        // xhr.open("GET", url , true);
+        // xhr.send();
+
 </script>
 
 <!-- Main content starts here -->

@@ -19,6 +19,7 @@ if(isset($_GET['register'])){
 //$userDataSet = new UserDataSet();
 ////$userDataSet->rehashPassword(500, 'michal');
 //$userDataSet->encryptAllPasswords();
+$userDataSet = new UserDataSet();
 
 
 if(isset($_GET['listFriends']))
@@ -55,15 +56,18 @@ if(isset($_POST["registrationButton"])){
 if(isset($_GET['map'])){
     require_once('Views/map.phtml');
 }
-if(isset($_GET['search'])){
+if(isset($_GET['searchField'])){
     require_once('search.php');
+}
+if(isset($_GET['lat'])){
+    $userDataSet->updateLocation($_GET['lat'], $_GET['lon'], $_SESSION['uid']);
+    echo 'chicken';
 }
 
 if(isset($_GET['showAll'])){
     require_once('Views/friendListElement.phtml');
 
 
-    $userDataSet = new UserDataSet();
     $usersPerPage = $userDataSet->countUsers();
     $resultsPerPage = 10;
     $view->numberOfPages = ceil($usersPerPage / $resultsPerPage);
