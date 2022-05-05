@@ -7,15 +7,15 @@
 
     <!-- download the library here: https://openlayers.org/two/ -->
 
-<?php $userDataSet = new UserDataSet();
-$foundUsers = [];
-$foundUsers = $userDataSet->getFriendshipList($_SESSION['uid'], 3);
-$usersData = [];
-
-foreach ($foundUsers as $friendship) {
-    $friendID = $friendship->getFriend2();
-    array_push($usersData, $userDataSet->fetchUserById($friendID));
-} ?>
+<?php //$userDataSet = new UserDataSet();
+//$foundUsers = [];
+//$foundUsers = $userDataSet->getFriendshipList($_SESSION['uid'], 3);
+//$usersData = [];
+//
+//foreach ($foundUsers as $friendship) {
+//    $friendID = $friendship->getFriend2();
+//    array_push($usersData, $userDataSet->fetchUserById($friendID));
+//} ?>
 <script>
         map = new OpenLayers.Map("mapdiv");
         mainLayer = new OpenLayers.Layer.OSM()
@@ -24,13 +24,19 @@ foreach ($foundUsers as $friendship) {
         epsg4326 =  new OpenLayers.Projection("EPSG:4326"); //WGS 1984 projection
         projectTo = map.getProjectionObject(); //The map projection (Spherical Mercator)
 
-        // if(geolocation in navigator) {
-        //     //performn something
-        // }else{
-        //     //geolocation is not available
-        // }
-        // navigator.geolocation.getCurrentPosition(position => {/*do something here with location*/});
+        var userLon = 0;
+        var userLat = 0;
+        updateUsersLocation();
 
+        console.log('lon: ' + userLon + 'lat' + userLat);
+
+
+
+
+        function showPosition(position) {
+            x.innerHTML = "Latitude: " + position.coords.latitude +
+                "<br>Longitude: " + position.coords.longitude;
+        }
         var lonLat = new OpenLayers.LonLat( -0.1279688 ,51.5077286 ).transform(epsg4326, projectTo);
 
 
@@ -39,38 +45,125 @@ foreach ($foundUsers as $friendship) {
 
         var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
 
-        // Define markers as "features" of the vector layer:
-        // var feature = new OpenLayers.Feature.Vector(
-        //     new OpenLayers.Geometry.Point( -0.1279688, 51.5077286 ).transform(epsg4326, projectTo),
-        //     {description:'This is the value of<br>the description attribute.' + '<img style=\"width:50px; padding: 1px;\" src="../images/nelson.jpg">'} ,
-        //     {externalGraphic: 'Views/marker.png', graphicHeight: 30, graphicWidth: 30, graphicXOffset:-12, graphicYOffset:-25  }
-        // );
-        // vectorLayer.addFeatures(feature);
-        <?php
-        if($foundUsers != null){
-            foreach($usersData as $user)
-            {
-                echo "var feature = new OpenLayers.Feature.Vector(\n\t 
-                        new OpenLayers.Geometry.Point(".$user->getLongitude()."," .$user->getLatitude().").transform(epsg4326, projectTo),\n
-                        {description:'<h4>" .$user->getFirstName()." ".$user->getLastName()." </h4>' + '<img style=\"width:60px\" src=\"../".$user->getPhoto(). "\"> <span class=\"badge bg-success rounded-pill\" id=\"distance\">20mi</span>'} ,\n
-                        {externalGraphic: '".$user->getPhoto(). "', graphicHeight: 40, graphicWidth: 40, graphicXOffset:-20, graphicYOffset:-25 }
-                         );\n
-                         vectorLayer.addFeatures(feature);\n";
-            }
-        }
-        ?>
+
+        var friends = "";
+        retrieveFriendsData();
+        setInterval(retrieveFriendsData, 10000);
 
         map.addLayer(vectorLayer);
-        vectorLayer.addFeatures(feature);
-
-
-
-
+        // vectorLayer.addFeatures(feature);
         //Add a selector control to the vectorLayer with popup functions
         var controls = {
             selector: new OpenLayers.Control.SelectFeature(vectorLayer, { onSelect: createPopup, onUnselect: destroyPopup })
         };
 
+
+
+        function retrieveFriendsData() {
+
+            fetch("ajaxGetFriends.php", {
+                method: 'GET'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    loadMarkers(data);
+                })
+                .catch((error) => {
+                    console.error("Error: " , error);
+                });
+
+        }
+
+        //Load all markers on the map from given json data
+        function loadMarkers(data){
+            //Check if received data about the friends is already the same as the one stored on the map
+            if(friends != data){
+                //Remove all existing markers
+                vectorLayer.destroyFeatures();
+                friends = data;
+
+                //Create a marker for each friend
+                for (var i = 0; i < friends.length; i++) {
+                    var f = friends[i];
+                    addMarker(f._longitude, f._latitude, f._photo, f._firstname, f._lastname);
+                }
+            }
+        }
+
+        /**
+         * Calculates the distance between given point and logged in user
+         * @param lon longitude of given point
+         * @param lat latitude of given point
+         * @param userLon user's longitude
+         * @param userLat user's latitude
+         * @returns {number} distance in km, integer form
+         */
+        function calculateDistance(lon, lat, userLon, userLat) {
+
+            const R = 6371e3; // radius of the Earth in metres
+            const φ1 = userLat * Math.PI/180; // φ, λ in radians
+            const φ2 = lat * Math.PI/180;
+            const Δφ = (lat-userLat) * Math.PI/180;
+            const Δλ = (lon-userLon) * Math.PI/180;
+
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            const dist = R * c; // in metres
+            return parseInt(dist/1000);
+        }
+
+        /**
+         * Adds an individual marker on the map for an individual user
+         * @param lon - longitude
+         * @param lat - latitude
+         * @param photourl - user's photo address
+         * @param firstName - user's first name
+         * @param lastName - user's last name
+         */
+        function addMarker(lon, lat, photourl, firstName, lastName){
+            // Define markers as "features" of the vector layer:
+            var feature = new OpenLayers.Feature.Vector(
+                new OpenLayers.Geometry.Point( lon, lat ).transform(epsg4326, projectTo),
+                {description:
+
+                    '<div class="list-group-item d-flex justify-content-between align-items-center container-f" style=" background-color: white;"> ' +
+                        '<span class="w-25"><img class="img-fluid rounded me-3" src="../'+ photourl +'"></span>' +
+                        '<span class="ms-1">' + firstName + ' '+ lastName + '</span>' +
+                        '<span></span>' +
+                        '<span class="ms-1"> Location </span>' +
+                        '<span class="badge bg-success rounded-pill ms-1" id="distance">' + calculateDistance(lon, lat, userLon, userLat) + 'km' +'</span>' +
+                    '</div>'
+                } ,
+                {externalGraphic: ''+ photourl + '', graphicHeight: 30, graphicWidth: 30, graphicXOffset:-12, graphicYOffset:-25  }
+            );
+            vectorLayer.addFeatures(feature);
+        }
+
+
+        map.events.register("moveend", map, function(evt) {
+            var extent = map.getExtent();
+            var friendListContainer = document.getElementById('friendsList');
+            removeAllChildNodes(friendListContainer);
+            for (var i = 0, l = vectorLayer.features.length; i < l; i++) {
+                var feature = vectorLayer.features[i];
+                if (extent.intersectsBounds(feature.geometry.getBounds())) {
+                  console.log(feature.data.description);
+                  //Create a new list item
+                  var newListItem = document.createElement('li');
+                  //Set its bootstrap class
+                  // newListItem.className = "list-group-item d-flex justify-content-between align-items-center container-f";
+                  //Set its inner text
+                  newListItem.innerHTML =  feature.data.description;
+                  friendListContainer.appendChild(newListItem);
+
+                }
+            }
+        });
+
+        //Create a small window with user details when clicked
         function createPopup(feature) {
             feature.popup = new OpenLayers.Popup.FramedCloud("pop",
                 feature.geometry.getBounds().getCenterLonLat(),
@@ -83,16 +176,15 @@ foreach ($foundUsers as $friendship) {
             //feature.popup.closeOnMove = true;
             map.addPopup(feature.popup);
         }
-
-
+        //Removes focused user window when unclicked
         function destroyPopup(feature) {
             feature.popup.destroy();
             feature.popup = null;
         }
-
-
         map.addControl(controls['selector']);
         controls['selector'].activate();
+
+
 
 </script>
 <style>
@@ -103,8 +195,9 @@ foreach ($foundUsers as $friendship) {
 <div id="FriendList" style="width:40%; height:600px;border:1px solid green;background-color: white;">
         <ul id="friendsList" class="list-group">
             <?php
-
-            if($foundUsers != null){
+            require_once ('getFriends.php');
+            $usersData = getFriends();
+            if($usersData != null){
                 foreach($usersData as $user)
                 {
                     displayFriendsDetailsListElement($user);
@@ -114,3 +207,4 @@ foreach ($foundUsers as $friendship) {
         </ul>
 </div>
 </div>
+

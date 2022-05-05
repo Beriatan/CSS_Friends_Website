@@ -23,6 +23,7 @@ if (isset($_POST["login"])) {
 
         $_SESSION["login"] = $username;
         $_SESSION["uid"] = $isLoggedIn[0]->getId();
+        ?><script></script><?php
 
     }
 }

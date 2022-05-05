@@ -21,6 +21,46 @@
 </head>
 
 <body role="document">
+<script>
+    /**
+     * This script holds all reusable methods for the document.
+     */
+
+    //Removes all child nodes of a given html item
+    function removeAllChildNodes(parent) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    }
+
+    /**
+     * Reusable XMLHttp request
+     */
+    function xmlhttprequest(url, methodType){
+        let xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            if(xhr.status == 200) {
+                return xhr.responseText;
+            }
+        }
+        xhr.open(methodType, url, true);
+        xhr.send();
+    }
+
+    //Retrieves user's location and updates it in the database as well as in the script
+    //Global variables userLat and userLon declared in the script in map.phtml
+    function updateUsersLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                console.log("DUPACYCKI");
+                userLat = position.coords.latitude;
+                userLon = position.coords.longitude;
+                console.log('lon: ' + userLon + 'lat' + userLat);});
+        } else {
+            x.innerHTML = "Geolocation is not supported by this browser.";
+        }
+    }
+</script>
 
 <!-- Main content starts here -->
 <div class="container-fluid no-gutters p-0" id="content">
