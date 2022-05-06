@@ -22,9 +22,6 @@
 
 <body role="document">
 <script>
-    /**
-     * This script holds all reusable methods for the document.
-     */
 
     //Removes all child nodes of a given html item
     function removeAllChildNodes(parent) {
@@ -67,7 +64,6 @@
      * Retrieves user's location and updates it in the database as well as in the script
      * Global variables userLat and userLon declared in the script in map.phtml
      */
-
     var userLon = 0;
     var userLat = 0;
         if (navigator.geolocation) {
@@ -78,8 +74,6 @@
         } else {
             x.innerHTML = "Geolocation is not supported by this browser.";
         }
-
-
 
 </script>
 

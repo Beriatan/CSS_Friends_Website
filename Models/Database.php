@@ -5,7 +5,8 @@ class Database {
     protected $dbHandle;
 
     /**
-     * @return null
+     * Creates a connection with the database and returns it if succesful
+     * @return instance of the database
      */
     public static function getInstance()
     {

@@ -2,7 +2,9 @@
 
 require_once('Models/Database.php');
 
-
+/**
+ * Class that contains all information about the user retrieved from the database, table user_data
+ */
 class UserData implements JsonSerializable
 {
 

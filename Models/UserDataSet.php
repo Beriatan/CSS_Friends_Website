@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class that contains a set of method used to retrieve the data from the database
+ */
 class UserDataSet
 {
     protected $dbHandle, $dbInstance;

@@ -13,7 +13,10 @@ require_once './login.php';?>
                     <a class="nav-link active" aria-current="page" href="index.php">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active"  href="selfAssesment.docx">Self-assesment</a>
+                    <a class="nav-link active"  href="selfAssesment1.docx">Self-assesment 1 </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active"  href="selfAssesment2.docx">Self-assesment 2</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active"  href="index.php?showAll=true&page=1">Show All Users</a>
@@ -80,8 +83,8 @@ require_once './login.php';?>
 
             return;
         } else {
+            //Find users and display them as a list in suggestion box underneath the navbar
             getJson("ajaxSearch.php?q=" + str, function (userData) {
-
                 var userList = '';
                 userList += '<p>Suggested names:</p>';
                 for (var i = 0; i < userData.length; i++) {
@@ -91,6 +94,8 @@ require_once './login.php';?>
                 var vic = document.getElementById("userSuggestion");
                 vic.innerHTML = userList;
             });
+
+            //Get name suggestions and display them under the navbar when user types in
             getJson("names.json", function (info) {
                 var names = info;
                 var namesList = '';
@@ -112,6 +117,11 @@ require_once './login.php';?>
 
     }
 
+    /**
+     * Generates HTML for suggested users as a list element
+     * @param data
+     * @returns {string}
+     */
     function generateUserSuggestions(data){
         return '<li class="list-group-item d-flex justify-content-between align-items-center container-f" style=" background-color: white;"> ' +
             '<a class="text-decoration-none text-black" href="index.php?searchField='+ data._firstname +'">' +
@@ -120,6 +130,11 @@ require_once './login.php';?>
             '</a></li>';
     }
 
+    /**
+     * Generates html for suggested nams as a list element
+     * @param data
+     * @returns {string}
+     */
     function generateNameSuggestions(data){
         return '<li><a class=" text-black" href="index.php?searchField='+ data._firstname +'">'+ data._firstname +'</a></li>';
     }

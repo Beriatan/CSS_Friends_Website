@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Controller that retrieves all friends of the user (relationship status 3)
+ */
     $userDataSet = new UserDataSet();
     $foundUsers = [];
     $foundUsers = $userDataSet->getFriendshipList($_SESSION['uid'], 3);

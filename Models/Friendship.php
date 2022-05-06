@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class Friendship, contains information about the relation between two users, their relationship status:
+ * 1 - invited,2 -  accept/deny, 3 -  friends
+ */
 class Friendship
 {
     protected $id, $friend1, $friend2, $relationship;
