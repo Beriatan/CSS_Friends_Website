@@ -1,7 +1,7 @@
 <!-- https://harrywood.co.uk/maps/examples/openlayers/marker-popups.html -->
 
-<div id="Map Wrapper" style="display:flex">
-<div id="mapdiv" style="width:60%;height:600px"></div>
+<div id="Map Wrapper" class="d-flex align-content-start flex-wrap">
+<div id="mapdiv" class="col-12 col-md-8 col-lg-8 col-xl-8 col-xxl-8" style="height:600px"></div>
 <script src="OpenLayers-2.13.1/OpenLayers.js"></script>
 
     <!-- download the library here: https://openlayers.org/two/ -->
@@ -23,16 +23,6 @@
         epsg4326 =  new OpenLayers.Projection("EPSG:4326"); //WGS 1984 projection
         projectTo = map.getProjectionObject(); //The map projection (Spherical Mercator)
 
-
-
-
-
-
-
-        function showPosition(position) {
-            x.innerHTML = "Latitude: " + position.coords.latitude +
-                "<br>Longitude: " + position.coords.longitude;
-        }
         var lonLat = new OpenLayers.LonLat( userLon ,userLat ).transform(epsg4326, projectTo);
 
         var zoom= 2;
@@ -98,14 +88,14 @@
         function calculateDistance(lon, lat, userLon, userLat) {
 
             const R = 6371e3; // radius of the Earth in metres
-            const φ1 = userLat * Math.PI/180; // φ, λ in radians
-            const φ2 = lat * Math.PI/180;
-            const Δφ = (lat-userLat) * Math.PI/180;
-            const Δλ = (lon-userLon) * Math.PI/180;
+            const userLatRad = userLat * Math.PI/180; // φ, λ in radians
+            const latRad = lat * Math.PI/180;
+            const latDifRad = (lat-userLat) * Math.PI/180;
+            const lonDifRad = (lon-userLon) * Math.PI/180;
 
-            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const a = Math.sin(latDifRad/2) * Math.sin(latDifRad/2) +
+                Math.cos(userLatRad) * Math.cos(latRad) *
+                Math.sin(lonDifRad/2) * Math.sin(lonDifRad/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
             const dist = R * c; // in metres
@@ -127,13 +117,13 @@
                 {description:
 
                     '<div class="list-group-item d-flex justify-content-between align-items-center container-f" style=" background-color: white;"> ' +
-
-                        '<span class="w-25"><img class="img-fluid rounded me-3" src="'+ photourl +'"></span>' +
+                        '<a class="text-decoration-none text-black" href="index.php?searchField='+ firstName +'">' +
+                        '<span><img class="img-fluid rounded me-3" style="width:100px" src="'+ photourl +'"></span>' +
                         '<span class="ms-1">' + firstName + ' '+ lastName + '</span>' +
                         '<span></span>' +
-                        '<span class="ms-1"> Location </span>' +
+                        '<span class="ms-1"> Distance:  </span>' +
                         '<span class="badge bg-success rounded-pill ms-1" id="distance">' + calculateDistance(lon, lat, userLon, userLat) + 'km' +'</span>' +
-                    '</div>'
+                    '</a></div>'
                 } ,
                 {externalGraphic: ''+ photourl + '', graphicHeight: 30, graphicWidth: 30, graphicXOffset:-12, graphicYOffset:-25  }
             );
@@ -199,18 +189,8 @@
     #friendsList{overflow:hidden; overflow-y:scroll;}
 </style>
 
-<div id="FriendList" style="width:40%; height:600px;border:1px solid green;background-color: white;">
+<div id="FriendList" class="col-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4" style=" height:600px;border:1px solid green;background-color: white;">
         <ul id="friendsList" class="list-group">
-            <?php
-            require_once ('getFriends.php');
-            $usersData = getFriends();
-            if($usersData != null){
-                foreach($usersData as $user)
-                {
-                    displayFriendsDetailsListElement($user);
-                }
-            } ?>
-
         </ul>
 </div>
 </div>

@@ -68,17 +68,3 @@ function displayFriendshipStatus($userID,$friendID)
 }
 
 
-
-/**
- * Displays basic friend's details as a list element
- */
-
-function displayFriendsDetailsListElement(UserData $userData){
-    echo '<li class="list-group-item d-flex justify-content-between align-items-center" ">
-          <span class="w-25"><img class="img-fluid rounded" src="'.$userData->getPhoto().'"  class="card-img-top" alt="Friend\'s Photo"></span>
-          <span>'.$userData->getFirstName().' '.$userData->getLastName().'</span>
-          <span></span>
-          <span>Location</span>
-          <span class="badge bg-success rounded-pill" id="distance">20mi</span>
-          </li>';
-}

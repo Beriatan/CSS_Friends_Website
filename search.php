@@ -8,9 +8,9 @@ include_once('Views/friendListElement.phtml');
         if (str_contains($_GET['searchField'], ':')) {
             $word = $_GET['searchField'];
            $words = explode(':', $word);
-           $foundUsers = $userDataSet->search($words[1], $words[0], 10);
+           $foundUsers = $userDataSet->search($words[1], $words[0], 30);
         }else{
-            $foundUsers = $userDataSet->search($_GET['searchField'],null,10);
+            $foundUsers = $userDataSet->search($_GET['searchField'],null,30);
         }
 
 
