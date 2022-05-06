@@ -131,44 +131,33 @@ class UserDataSet
     }
 
     /**
-     * Finds users containing input text in their last, first name, email or username
+     * Checks the database and returns any users, which contain the input text.
      * @param $searchTerm - input text
+     * @param $attribute - specific attribute (column in the database) you want to search
      * @param $limit - limit the number of queries received
-     * @return array
+     * @return array user data set
      */
-    public function search($searchTerm, $limit = null)
+    public function search($searchTerm,$attribute = null,  $limit = null)
     {
         $searchedTerm = '%' . $searchTerm . '%';
-        $sqlQuery = "SELECT DISTINCT * FROM user_data
+        //Search by attribute and value if attribute given
+        if($attribute!=null){
+            $sqlQuery = "SELECT * FROM user_data
+                     WHERE :attribute 
+                     LIKE :query1";
+        }else{
+            $sqlQuery = "SELECT DISTINCT * FROM user_data
                      WHERE first_name 
                      LIKE :query1 OR last_name LIKE :query1 OR email LIKE :query1 OR username LIKE :query1";
+        }
+        //Set the limit if given
         if($limit !=null) $sqlQuery .= " LIMIT :limit";
-
         $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
+
+        //Set attribute and limit parameters if given
+        if($attribute!=null) $statement->bindParam(':attribute', $attribute);
         if($limit !=null) $statement->bindParam(':limit', $limit, PDO::PARAM_INT);
         $statement->bindParam(':query1', $searchedTerm);
-        $statement->execute(); //Executes the PDO statement
-        return $this->fetchUsers($statement);
-    }
-
-    /**
-     * Finds users based on attribute and value of that attribute given.
-     * @param $searchTerm
-     * @param $attribute
-     * @param $limit
-     * @return array
-     */
-    public function searchAttributeAndValue($searchTerm, $attribute,  $limit = null)
-    {
-        $searchedTerm = '%' . $searchTerm . '%';
-        $sqlQuery = "SELECT * FROM user_data
-                     WHERE :attribute 
-                     LIKE :query1 
-                     LIMIT :limit";
-        $statement = $this->dbHandle->prepare($sqlQuery); //Prepares the PDO statement
-        $statement->bindParam(':attribute', $attribute);
-        $statement->bindParam(':query1', $searchedTerm);
-        $statement->bindParam(':limit', $limit, PDO::PARAM_INT);
         $statement->execute(); //Executes the PDO statement
         return $this->fetchUsers($statement);
     }

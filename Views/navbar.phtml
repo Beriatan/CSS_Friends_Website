@@ -26,8 +26,6 @@ require_once './login.php';?>
                         Friends...
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="Views/openstreetmapexample2popups.html">Invite/accept friends</a></li>
-                        <li><a class="dropdown-item" href="Views/cemetery.phtml">Cemetery</a></li>
                         <li><a class="dropdown-item" href="index.php?listFriends=true">List Friends</a></li>
                         <li><a class="dropdown-item" href="index.php?map=true"><i class="bi bi-geo-alt"></i> Map of Friends</a></li>
                     </ul>
@@ -35,13 +33,17 @@ require_once './login.php';?>
                 <li class="nav-item px-5">
                     <form class="d-flex" method="get" action="index.php">
                         <div class="input-group position-relative">
-                            <input type="text" class="form-control" name="searchField" type="search" onkeyup="showHint(this.value)" id="findFriends" placeholder="search..." aria-label="Search" aria-describedby="search">
+                            <input type="text" class="form-control"  name="searchField" type="search" onkeyup="showHint(this.value)" id="findFriends" placeholder="search..." aria-label="Search" aria-describedby="search">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary"type="submit">Search</button>
                             </div>
+
                         </div>
                     </form></li>
-                <li class="nav-item"><p>Hint: <span id="txtHint"></span></p></li>
+                <!-- Div with suggested results-->
+                <li class="nav-item">
+
+                </li>
                 <?php
                 //Display log in button if not logged in
                 if(!isset($_SESSION["login"])) {
@@ -63,24 +65,77 @@ require_once './login.php';?>
         </div>
     </div>
 </nav>
+
+<div class=" ps-5 d-flex bg-light">
+    <div class="col-3" id="nameSuggestion"></div>
+    <ul class="list-group col-9" style="max-height:20em;overflow:hidden; overflow-y:scroll;" id="userSuggestion"></ul>
+
+</div>
 <script>
+
     function showHint(str) {
         if (str.length == 0) {
-            document.getElementById("txtHint").innerHTML = "";
+            document.getElementById("userSuggestion").innerHTML = "";
+            document.getElementById("nameSuggestion").innerHTML = "";
+
             return;
         } else {
-            const xmlhttp = new XMLHttpRequest();
-
+            var data;
+            let xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function() {
                 if(this.readyState == 4 && this.status == 200) {
-                    // document.getElementById("txtHint").innerHTML = this.responseText;
-                    var vic = document.getElementById("txtHint")
-                    vic.innerHTML = this.responseText;
+                    data = this.responseText;
+                    var userData = JSON.parse(data);
+                    var userList ='';
+                    userList += '<p>Suggested names:</p>';
+                    for (var i = 0; i < userData.length; i++) {
+                        var user = userData[i];
+                        userList += generateUserHtml(user);
+                    }
+                    var vic = document.getElementById("userSuggestion");
+                    vic.innerHTML = userList;
                 }
             }
             xmlhttp.open("GET", "ajaxSearch.php?q=" + str);
             xmlhttp.send();
+
+            let xmlrequest = new XMLHttpRequest();
+            xmlrequest.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200) {
+                    var names = JSON.parse(this.responseText);
+                    var namesList = '';
+                    namesList += '<p>Did you mean:</p>';
+                    namesList += '<ul class="list-group col-3 d-flex" style="list-style-type: none" id="nameSuggestion">';
+                    var counter = 0;
+                    for (var name of names) {
+                        console.log(name._firstname);
+                        if(name._firstname.includes(str) && counter < 10){
+                            namesList += generateNameSuggestions(name);
+                            counter++;
+                        }
+                    };
+                    namesList += '</ul>';
+                    var namesListHtml = document.getElementById("nameSuggestion");
+                    namesListHtml.innerHTML = namesList;
+                }
+            }
+            xmlrequest.open("GET", "names.json");
+            xmlrequest.send();
+
+
         }
+    }
+
+    function generateUserHtml(data){
+        return '<li class="list-group-item d-flex justify-content-between align-items-center container-f" style=" background-color: white;"> ' +
+            '<a class="text-decoration-none text-black" href="index.php?searchField='+ data._firstname +'">' +
+            '<span><img class="img-fluid rounded me-3" style="width:40px" src="'+ data._photo +'"></span>' +
+            '<span class="ms-1">' + data._firstname + ' '+ data._lastname + '</span>' +
+            '</a></li>';
+    }
+
+    function generateNameSuggestions(data){
+        return '<li><a class=" text-black" href="index.php?searchField='+ data._firstname +'">'+ data._firstname +'</a></li>';
     }
 </script>
 
