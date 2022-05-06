@@ -80,50 +80,36 @@ require_once './login.php';?>
 
             return;
         } else {
-            var data;
-            let xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200) {
-                    data = this.responseText;
-                    var userData = JSON.parse(data);
-                    var userList ='';
-                    userList += '<p>Suggested names:</p>';
-                    for (var i = 0; i < userData.length; i++) {
-                        var user = userData[i];
-                        userList += generateUserSuggestions(user);
+            getJson("ajaxSearch.php?q=" + str, function (userData) {
+
+                var userList = '';
+                userList += '<p>Suggested names:</p>';
+                for (var i = 0; i < userData.length; i++) {
+                    var user = userData[i];
+                    userList += generateUserSuggestions(user);
+                }
+                var vic = document.getElementById("userSuggestion");
+                vic.innerHTML = userList;
+            });
+            getJson("names.json", function (info) {
+                var names = info;
+                var namesList = '';
+                namesList += '<p>Did you mean:</p>';
+                namesList += '<ul class="list-group col-3 d-flex" style="list-style-type: none" id="nameSuggestion">';
+                var counter = 0;
+                for (var name of names) {
+                    console.log(name._firstname);
+                    if (name._firstname.includes(str) && counter < 10) {
+                        namesList += generateNameSuggestions(name);
+                        counter++;
                     }
-                    var vic = document.getElementById("userSuggestion");
-                    vic.innerHTML = userList;
                 }
-            }
-            xmlhttp.open("GET", "ajaxSearch.php?q=" + str);
-            xmlhttp.send();
-
-            let xmlrequest = new XMLHttpRequest();
-            xmlrequest.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200) {
-                    var names = JSON.parse(this.responseText);
-                    var namesList = '';
-                    namesList += '<p>Did you mean:</p>';
-                    namesList += '<ul class="list-group col-3 d-flex" style="list-style-type: none" id="nameSuggestion">';
-                    var counter = 0;
-                    for (var name of names) {
-                        console.log(name._firstname);
-                        if(name._firstname.includes(str) && counter < 10){
-                            namesList += generateNameSuggestions(name);
-                            counter++;
-                        }
-                    };
-                    namesList += '</ul>';
-                    var namesListHtml = document.getElementById("nameSuggestion");
-                    namesListHtml.innerHTML = namesList;
-                }
-            }
-            xmlrequest.open("GET", "names.json");
-            xmlrequest.send();
-
-
+                namesList += '</ul>';
+                var namesListHtml = document.getElementById("nameSuggestion");
+                namesListHtml.innerHTML = namesList;
+            });
         }
+
     }
 
     function generateUserSuggestions(data){

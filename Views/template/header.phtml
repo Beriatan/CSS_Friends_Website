@@ -33,10 +33,41 @@
         }
     }
 
+    /**
+     * Retrieves json file from the URL. Use in this manner: getJson(address, function(data) { do something here with the data })
+     * @param url
+     * @param callback a method that operates on returned data
+     */
+    function getJson(url, callback) {
+        var request = new XMLHttpRequest();
+
+        request.open('GET', url, true);
+
+        request.onload = function() {
+            if (request.status >= 200 && request.status < 400) {
+                var json = JSON.parse(request.responseText);
+
+                callback(json);
+
+            } else {
+                // server error
+                console.error("There was a problem with connection. Error number: " + request.status);
+                return;
+            }
+        };
+        request.onerror = function() {
+            console.error( "Can't connect to the server." );
+            return;
+        };
+        request.send();
+    }
 
 
-    //Retrieves user's location and updates it in the database as well as in the script
-    //Global variables userLat and userLon declared in the script in map.phtml
+    /**
+     * Retrieves user's location and updates it in the database as well as in the script
+     * Global variables userLat and userLon declared in the script in map.phtml
+     */
+
     var userLon = 0;
     var userLat = 0;
         if (navigator.geolocation) {
@@ -48,16 +79,7 @@
             x.innerHTML = "Geolocation is not supported by this browser.";
         }
 
-        // var url = 'index.php?lat=' + userLat + '&long=' + userLon;
 
-        let xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-            if(xhr.status == 200) {
-                return xhr.responseText;
-            }
-        }
-        xhr.open("GET", url , true);
-        xhr.send();
 
 </script>
 

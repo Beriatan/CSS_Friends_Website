@@ -3,18 +3,8 @@
 <div id="Map Wrapper" class="d-flex align-content-start flex-wrap">
 <div id="mapdiv" class="col-12 col-md-8 col-lg-8 col-xl-8 col-xxl-8" style="height:600px"></div>
 <script src="OpenLayers-2.13.1/OpenLayers.js"></script>
+<!-- download the library here: https://openlayers.org/two/ -->
 
-    <!-- download the library here: https://openlayers.org/two/ -->
-
-<?php //$userDataSet = new UserDataSet();
-//$foundUsers = [];
-//$foundUsers = $userDataSet->getFriendshipList($_SESSION['uid'], 3);
-//$usersData = [];
-//
-//foreach ($foundUsers as $friendship) {
-//    $friendID = $friendship->getFriend2();
-//    array_push($usersData, $userDataSet->fetchUserById($friendID));
-//} ?>
 <script>
         map = new OpenLayers.Map("mapdiv");
         mainLayer = new OpenLayers.Layer.OSM()
@@ -189,9 +179,10 @@
     #friendsList{overflow:hidden; overflow-y:scroll;}
 </style>
 
+    <!--Container for friends displayed on the map-->
 <div id="FriendList" class="col-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4" style=" height:600px;border:1px solid green;background-color: white;">
-        <ul id="friendsList" class="list-group">
-        </ul>
+
+        <ul id="friendsList" class="list-group"> </ul>
 </div>
 </div>
 
