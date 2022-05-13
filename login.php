@@ -12,8 +12,7 @@ if (isset($_POST["login"])) {
     $isLoggedIn = $userDataSet->authenticateCredentials($username, $password);
 
 
-
-    if (! $isLoggedIn) {
+    if ($isLoggedIn == null) {
        // echo "Incorrect username or password";
         ?><script>window.alert("Incorrect username or password");
         </script><?php
@@ -29,13 +28,12 @@ if (isset($_POST["login"])) {
 }
 if(isset($_POST["logout"]))
 {
-    unset($_COOKIE['searchedTerm']);//delete the cookie after displaying the list
-    setcookie('searchedTerm', '', time() - 3600);
     //echo "Logout user";
     unset($_SESSION["login"]);
     $userDataSet = null;
     session_destroy();
 }
+
 
 
 

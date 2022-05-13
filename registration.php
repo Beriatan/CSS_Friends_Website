@@ -9,9 +9,9 @@ if(isset($_POST["register"])) {
     $username = filter_var($_POST["uname"]);
     $password = filter_var($_POST["pwd"]);
     $passwordRetype = filter_var($_POST["pwdR"]);
-
+    $photo = $_POST["photo"];
     $userDataSet = new UserDataSet();
-    $userDataSet->registerUser($username,$firstName,$lastName,$email,$phoneNumber,$password);
+    $userDataSet->registerUser($username,$firstName,$lastName,$email,$phoneNumber,$password, $photo);
 }
 
 require_once('Views/registration.phtml');

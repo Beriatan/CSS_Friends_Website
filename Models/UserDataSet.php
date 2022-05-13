@@ -83,21 +83,20 @@ class UserDataSet
     public function authenticateCredentials($username, $password)
     {
         //Extract the data of requested username.
-        $sqlQuery = 'SELECT id,password_hash 
+        $sqlQuery = "SELECT id,password_hash 
                      FROM user_data
-                     WHERE username = :uname';  //Prepare the query
+                     WHERE username = :uname";  //Prepare the query
         //preparing the PDO statement
         $statement = $this->dbHandle->prepare($sqlQuery);
         //executing query
-        $statement->bindParam(':uname', $username);
+        $statement->bindParam(':uname', $username, PDO::PARAM_STR);
         $statement->execute();
         $hashed_pass = $statement->fetch();
         if ($hashed_pass != null) {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-
             $dataSet = [];
-            if (password_verify($password, $hashed_pass['password_hash'])) {
-                array_push($dataSet, $this->fetchUserById($hashed_pass['id']));
+            if (password_verify($password, $hashed_pass['password_hash'][0])) {
+                array_push($dataSet, $this->fetchUserById($hashed_pass['id'][0]));
                 return $dataSet;
             }
         }
@@ -105,18 +104,18 @@ class UserDataSet
 
 
     //Adds the new user to the database - if user exists, returns to the registration page with warning
-    public function registerUser($username, $first_name, $last_name, $email, $phone_number, $password)
+    public function registerUser($username, $first_name, $last_name, $email, $phone_number, $password, $photo)
     {
         if ($this->authenticateCredentials($username, $password) != null) {
             echo 'This user already exists, select a different username';
             require_once('registration.php');
         } else {
-            $photoLink = '/images/people/person4.jpg';//APPLY PHOTO - this option needs to be added
+            $photoLink = '/images/people/'.$photo;//APPLY PHOTO - this option needs to be added
             $lat = '15';
             $long = '15';
             $hashedPass = password_hash($password, PASSWORD_DEFAULT);
             $sqlQuery = "INSERT INTO user_data(first_name, last_name, email,phone_number,username,latitude, longitude,photo, password_hash)
-                         VALUES(:fname,:lname,:email,:pnumber,:uname,:pwd,:lat,:long,:photolink,:hashedPass);";
+                         VALUES(:fname,:lname,:email,:pnumber,:uname,:lat,:long,:photolink,:hashedPass);";
 
             //Prepare and execute query to add to the user_data database
             $statement = $this->dbHandle->prepare($sqlQuery);
@@ -130,6 +129,7 @@ class UserDataSet
             $statement->bindParam(':photolink', $photoLink);
             $statement->bindParam(':hashedPass', $hashedPass);
             $statement->execute();
+            echo 'registered successfuly';
         }
     }
 

@@ -21,6 +21,7 @@ if(isset($_GET['register'])){
 //$userDataSet->encryptAllPasswords();
 $userDataSet = new UserDataSet();
 
+
 //$names = $userDataSet->fetchAllUsers();
 //file_put_contents('names.json', json_encode($names));
 

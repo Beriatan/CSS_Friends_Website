@@ -31,14 +31,31 @@
         <div class="form-group pb-4">
             <label for="passwordRepeatInput">Re-type your password</label>
             <input type="password" class="form-control" name="pwdR" id="passwordRepeatInput" placeholder="Password">
-        </div><!--
-        <div class="form-group">
-            <label for="addPhotoButton">Add profile image(optional)</label>
-            <input type="file" class="form-control-file" id="addPhotoButton">
-        </div>-->
+        </div>
+        <div class="form-group ">
+            <div class="mb-5">
+                <label for="Image" class="form-label">Upload your image</label>
+                <input class="form-control" type="file" name="photo" id="photo" onchange="preview()">
+                <button onclick="clearImage()" class="btn btn-primary mt-3">Clear Image</button>
+            </div>
+            <img id="frame" src="" class="img-fluid" />
+        </div>
         <button type="submit" name="register" class="btn btn-primary">Create Account</button>
     </form>
-    <!--login form end-->
+
+
+    <script>
+        function preview() {
+            frame.src = URL.createObjectURL(event.target.files[0]);
+        }
+        function clearImage() {
+            document.getElementById('formFile').value = null;
+            frame.src = "";
+        }
+    </script>
+    <!--registration form end-->
+
+
 </div>
 <div class="pt-3"></div>
 
